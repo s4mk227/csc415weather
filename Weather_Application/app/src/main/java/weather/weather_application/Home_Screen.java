@@ -11,3 +11,4 @@ public class Home_Screen extends AppCompatActivity {
         setContentView(R.layout.activity_home__screen);
     }
 }
+//testing Sam
