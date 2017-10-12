@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.ImageView;
+import android.widget.Button;
 import android.location.LocationManager;
 import android.location.LocationListener;
 import android.content.Context;
@@ -17,6 +18,11 @@ import android.support.v4.app.ActivityCompat;
 import android.os.AsyncTask;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
+import android.view.View;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -31,11 +37,19 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     TextView txtCity, txtLastUpdate, txtDescription, txtHumidity, txtTime, txtCelsius;
     ImageView imageView;
+    Button tempButton, timeButton;
 
     LocationManager locationManager;
     String provider;
     static double lat, lng;
     OpenWeatherMap openWeatherMap = new OpenWeatherMap();
+
+    String display_fahrenheit = "0";
+    String display_celsius = "0";
+    String time_display_sunset = "";
+
+    boolean fahrenheit_test = true;
+    boolean twelve_hour_time_sunset = true;
 
     int MY_MYPERMISSION = 0;
 
@@ -57,6 +71,12 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         txtTime = (TextView) findViewById(R.id.txtTime);
         txtCelsius = (TextView) findViewById(R.id.txtCelsius);
         imageView = (ImageView) findViewById(R.id.imageView);
+
+        tempButton = (Button) findViewById(R.id.tempButton);
+        timeButton = (Button) findViewById(R.id.timeButton);
+
+        tempButton.setEnabled(false);
+        timeButton.setEnabled(false);
 
 
         // Get the user's coordinates.
@@ -84,6 +104,76 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
         if (location == null)
             Log.e("Tag", "No Location");
+
+
+        // Check to see if the tempButton was selected.
+        tempButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View var){
+
+                // Change the displayed temperature.
+                if (fahrenheit_test == true) {
+
+                    txtCelsius.setText(display_celsius);
+                    fahrenheit_test = false;
+
+                } else {
+
+                    txtCelsius.setText(display_fahrenheit);
+                    fahrenheit_test = true;
+
+                }
+            }
+
+
+        });
+
+        // Check to see if the timeButton was selected.
+        timeButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View var){
+
+                SimpleDateFormat twelve_hour = new SimpleDateFormat("HH:mm");
+                SimpleDateFormat twenty_four_hour = new SimpleDateFormat("hh:mm a");
+
+                time_display_sunset = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
+
+                // Change the displayed time.
+                if (twelve_hour_time_sunset == true) {
+
+                    Date date = new Date();
+
+                    try {
+                        date = twelve_hour.parse(time_display_sunset);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    time_display_sunset = String.format("Sunrise: %s", twenty_four_hour.format(date));
+                    txtTime.setText(time_display_sunset);
+                    twelve_hour_time_sunset = false;
+
+                } else {
+
+                    Date date = new Date();
+
+                    try {
+                        date = twelve_hour.parse(time_display_sunset);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    time_display_sunset = String.format("Sunrise: %s", twelve_hour.format(date));
+                    txtTime.setText(time_display_sunset);
+                    twelve_hour_time_sunset = true;
+                }
+
+            }
+
+
+        });
 
     }
 
@@ -170,26 +260,42 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
 
+            // Create a new Gson object.
             Gson gson = new Gson();
+
+            // Create a new type token.
             Type mType= new TypeToken<OpenWeatherMap>(){}.getType();
+
+            // Create an openWeatherMap object.
             openWeatherMap = gson.fromJson(s, mType);
 
-            double temp = openWeatherMap.getMain().getTemp();
+            double temp_celsius = openWeatherMap.getMain().getTemp();
             double check = (double)9/5;
-            double display_temp = temp * check + 32;
-            display_temp = Math.round(display_temp);
-            String temp_display = Double.toString(display_temp);
-            Log.e("Tag", temp_display);
+            double temp_fahrenheit = temp_celsius * check + 32;
+            temp_fahrenheit = Math.round(temp_fahrenheit);
+            display_fahrenheit = Double.toString(temp_fahrenheit);
+            display_fahrenheit = String.format("%s °F", display_fahrenheit);
+            display_celsius = Double.toString(temp_celsius);
+            display_celsius = String.format("%s °C", display_celsius);
+            Log.e("temp_display", display_celsius);
+            Log.e("temp_fahrenheit", display_fahrenheit);
+
+            time_display_sunset = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
+
 
             txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
-            txtTime.setText(String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise())));
-            txtCelsius.setText(String.format("%s °F", display_temp));
+            txtTime.setText(time_display_sunset);
+            txtCelsius.setText(display_fahrenheit);
             Picasso.with(DisplayWeather.this)
                     .load(Common.getImage(openWeatherMap.getWeather().get(0).getIcon()))
                     .into(imageView);
+
+            // Enable the temp and time buttons.
+            tempButton.setEnabled(true);
+            timeButton.setEnabled(true);
 
 
         }
