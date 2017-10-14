@@ -150,6 +150,9 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 // Toast.makeText(getBaseContext(), "Setting Selected.", Toast.LENGTH_LONG).show();
                 return true;
+            case R.id.menu_about:
+                startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);

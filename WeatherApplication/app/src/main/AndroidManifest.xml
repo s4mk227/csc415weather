@@ -30,6 +30,12 @@
             android:name="androidclassproject.weatherapplication.SettingsActivity"
             android:label="Settings" >
         </activity>
+
+        <activity
+            android:name="androidclassproject.weatherapplication.AboutActivity"
+            android:label="About" >
+        </activity>
+
     </application>
 
 </manifest>
