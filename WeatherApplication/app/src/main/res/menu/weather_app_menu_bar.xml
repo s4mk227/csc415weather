@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res_auto"
+    android:layout_marginTop="10dp">
+    <item android:id="@+id/menu_settings"
+        android:title="@string/menu_settings"
+        android:icon="@mipmap/ic_settings"
+        compat:showAsAction="always" />
+</menu>

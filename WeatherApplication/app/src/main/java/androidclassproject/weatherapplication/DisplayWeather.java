@@ -1,12 +1,15 @@
 package androidclassproject.weatherapplication;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.widget.Button;
@@ -19,6 +22,12 @@ import android.os.AsyncTask;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import android.view.View;
+import android.preference.PreferenceManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -28,6 +37,7 @@ import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidclassproject.weatherapplication.Common.Common;
 import androidclassproject.weatherapplication.Helper.Helper;
@@ -35,21 +45,30 @@ import androidclassproject.weatherapplication.Model.OpenWeatherMap;
 
 public class DisplayWeather extends AppCompatActivity implements LocationListener {
 
+    // Declare varaibles for the widgets on the DisplayWeather page.
     TextView txtCity, txtLastUpdate, txtDescription, txtHumidity, txtTime, txtCelsius;
     ImageView imageView;
-    Button tempButton, timeButton;
 
+    // Declare a location manager varible.
     LocationManager locationManager;
     String provider;
+
+    // Declare variables to store the latitude and longitude vales.
     static double lat, lng;
+
+    // Declare a new OpenWeatherMap object.
     OpenWeatherMap openWeatherMap = new OpenWeatherMap();
 
-    String display_fahrenheit = "0";
-    String display_celsius = "0";
-    String time_display_sunset = "";
+    // Declare the default amount for the temperature and time display variables.
+    String display_fahrenheit = "";
+    String display_celsius = "";
+    String time_display_sunrise = "";
+    String temp_time_display = "";
 
-    boolean fahrenheit_test = true;
-    boolean twelve_hour_time_sunset = true;
+    int temp_setting = 0;
+    int time_setting = 0;
+
+    private SharedPreferences prefs;
 
     int MY_MYPERMISSION = 0;
 
@@ -64,6 +83,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
 
+        // Declare variables for the widgets on the DisplayWeather page.
         txtCity = (TextView) findViewById(R.id.txtCity);
         txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
         txtDescription = (TextView) findViewById(R.id.txtDescription);
@@ -72,11 +92,11 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         txtCelsius = (TextView) findViewById(R.id.txtCelsius);
         imageView = (ImageView) findViewById(R.id.imageView);
 
-        tempButton = (Button) findViewById(R.id.tempButton);
-        timeButton = (Button) findViewById(R.id.timeButton);
+        // set the default values for the preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        tempButton.setEnabled(false);
-        timeButton.setEnabled(false);
+        // get default SharedPreferences object
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         // Get the user's coordinates.
@@ -105,76 +125,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         if (location == null)
             Log.e("Tag", "No Location");
 
-
-        // Check to see if the tempButton was selected.
-        tempButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View var){
-
-                // Change the displayed temperature.
-                if (fahrenheit_test == true) {
-
-                    txtCelsius.setText(display_celsius);
-                    fahrenheit_test = false;
-
-                } else {
-
-                    txtCelsius.setText(display_fahrenheit);
-                    fahrenheit_test = true;
-
-                }
-            }
-
-
-        });
-
-        // Check to see if the timeButton was selected.
-        timeButton.setOnClickListener(new View.OnClickListener(){
-
-            @Override
-            public void onClick(View var){
-
-                SimpleDateFormat twelve_hour = new SimpleDateFormat("HH:mm");
-                SimpleDateFormat twenty_four_hour = new SimpleDateFormat("hh:mm a");
-
-                time_display_sunset = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
-
-                // Change the displayed time.
-                if (twelve_hour_time_sunset == true) {
-
-                    Date date = new Date();
-
-                    try {
-                        date = twelve_hour.parse(time_display_sunset);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    time_display_sunset = String.format("Sunrise: %s", twenty_four_hour.format(date));
-                    txtTime.setText(time_display_sunset);
-                    twelve_hour_time_sunset = false;
-
-                } else {
-
-                    Date date = new Date();
-
-                    try {
-                        date = twelve_hour.parse(time_display_sunset);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    time_display_sunset = String.format("Sunrise: %s", twelve_hour.format(date));
-                    txtTime.setText(time_display_sunset);
-                    twelve_hour_time_sunset = true;
-                }
-
-            }
-
-
-        });
-
     }
 
     @Override
@@ -185,6 +135,25 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
         new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.weather_app_menu_bar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_settings:
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                // Toast.makeText(getBaseContext(), "Setting Selected.", Toast.LENGTH_LONG).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -232,6 +201,22 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
 
         locationManager.requestLocationUpdates(provider, 400, 1, this);
+
+        temp_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
+
+        if (temp_setting == 0) {
+
+            txtCelsius.setText(display_fahrenheit);
+
+        } else {
+
+            txtCelsius.setText(display_celsius);
+
+        }
+
+        time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
+
+
     }
 
     @Override
@@ -277,25 +262,32 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             display_fahrenheit = String.format("%s °F", display_fahrenheit);
             display_celsius = Double.toString(temp_celsius);
             display_celsius = String.format("%s °C", display_celsius);
-            Log.e("temp_display", display_celsius);
-            Log.e("temp_fahrenheit", display_fahrenheit);
 
-            time_display_sunset = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
+            temp_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
+            if (temp_setting == 0) {
+
+                txtCelsius.setText(display_fahrenheit);
+
+            } else {
+
+                txtCelsius.setText(display_celsius);
+
+            }
+
+            time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
+
+            time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
+            temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
 
             txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
-            txtTime.setText(time_display_sunset);
-            txtCelsius.setText(display_fahrenheit);
+            txtTime.setText(time_display_sunrise);
             Picasso.with(DisplayWeather.this)
                     .load(Common.getImage(openWeatherMap.getWeather().get(0).getIcon()))
                     .into(imageView);
-
-            // Enable the temp and time buttons.
-            tempButton.setEnabled(true);
-            timeButton.setEnabled(true);
 
 
         }
