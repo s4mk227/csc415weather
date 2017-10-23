@@ -1,0 +1,85 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/scrollViewAbout">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutActivity" >
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Developed By"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:textSize="28dp"
+        android:id="@+id/textviewAboutDescription"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tommy Arnzen"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutDescription"
+        android:id="@+id/textviewAboutOne"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sam King"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutTwo"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutOne"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Brent Barnhorst"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutThree"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutTwo"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Colton Laker"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutFour"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutThree"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jacob Vonhandorf"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutFive"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutFour"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mark Khulenberg"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutSix"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutFive"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Holden Wight"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textviewAboutSeven"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/textviewAboutSix"/>
+
+</RelativeLayout>
+
+    </ScrollView>

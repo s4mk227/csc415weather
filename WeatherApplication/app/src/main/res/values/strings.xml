@@ -1,3 +1,31 @@
 <resources>
     <string name="app_name">WeatherApplication</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_about">About</string>
+
+
+    <string name="temp_title">Temperature Settings</string>
+    <string name="temp_summary">Select a temperature setting.</string>
+    <string-array name="temp_options">
+        <item >Fahrenheit</item>
+        <item >Celsius</item>
+    </string-array>
+    <string-array name="temp_values">
+        <item >0</item>
+        <item >1</item>
+    </string-array>
+
+    <string name="time_title">Time Settings</string>
+    <string name="time_summary">Select a time format.</string>
+    <string-array name="time_options">
+        <item >12-Hour</item>
+        <item >24-Hour</item>
+    </string-array>
+    <string-array name="time_values">
+        <item >0</item>
+        <item >1</item>
+    </string-array>
+
+    <string name="about">Check</string>
+
 </resources>
