@@ -54,7 +54,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     String provider;
 
     // Declare variables to store the latitude and longitude vales.
-    static double lat, lng;
+    static double lat = 0;
+    static double lng = 0;
 
     // Declare a new OpenWeatherMap object.
     OpenWeatherMap openWeatherMap = new OpenWeatherMap();
@@ -72,16 +73,46 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     int MY_MYPERMISSION = 0;
 
+    int theme_settings = 0;
+    int theme_settings_check = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_weather);
+
+        // set the default values for the preferences
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        // get default SharedPreferences object
+        prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        // Get the value of the theme.
+        theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
+
+        if (theme_settings == 0) {
+
+            // Set the theme.
+            setTheme(R.style.theme_light);
+
+            // Set the theme settings check.
+            theme_settings_check = 0;
+
+        } else if (theme_settings == 1){
+
+            // Set the theme.
+            setTheme(R.style.theme_dark);
+
+            // Set the theme settings check.
+            theme_settings_check = 1;
+
+        }
 
         // Display the application icon in the title bar.
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
+        setContentView(R.layout.activity_display_weather);
 
         // Declare variables for the widgets on the DisplayWeather page.
         txtCity = (TextView) findViewById(R.id.txtCity);
@@ -91,12 +122,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         txtTime = (TextView) findViewById(R.id.txtTime);
         txtCelsius = (TextView) findViewById(R.id.txtCelsius);
         imageView = (ImageView) findViewById(R.id.imageView);
-
-        // set the default values for the preferences
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        // get default SharedPreferences object
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
 
         // Get the user's coordinates.
@@ -121,6 +146,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
 
         Location location = locationManager.getLastKnownLocation(provider);
+
+        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
 
         if (location == null)
             Log.e("Tag", "No Location");
@@ -218,6 +245,15 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
 
         time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
+
+        // Store the value of the theme.
+        theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
+
+        // If the value of the theme has changed recreate the activity.
+        if (theme_settings != theme_settings_check) {
+            recreate();
+            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+        }
 
 
     }
