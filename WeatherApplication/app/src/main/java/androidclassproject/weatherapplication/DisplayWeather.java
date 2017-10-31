@@ -147,8 +147,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
         Location location = locationManager.getLastKnownLocation(provider);
 
-        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-
         if (location == null)
             Log.e("Tag", "No Location");
 

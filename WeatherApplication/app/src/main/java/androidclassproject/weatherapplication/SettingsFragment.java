@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
@@ -49,11 +50,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences preference_listener, String s) {
-        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
-        Intent i = new Intent(getActivity(), DisplayWeather.class);
-        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-        getActivity().startActivity(i);
+
+        if (s.equals("pref_theme")) {
+            prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
+            Intent i = new Intent(getActivity(), DisplayWeather.class);
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            getActivity().startActivity(i);
+        }
     }
 
 }
