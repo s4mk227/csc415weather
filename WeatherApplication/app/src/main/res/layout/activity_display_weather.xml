@@ -146,7 +146,7 @@
                 android:id="@+id/textviewWeatherOne"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="80°"
+                android:text="50°"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:layout_centerInParent="true"
@@ -180,7 +180,7 @@
                     android:id="@+id/textviewWeatherTwo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="82°"
+                    android:text="45°"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_centerInParent="true"
@@ -214,7 +214,7 @@
                     android:id="@+id/textviewWeatherThree"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="86°"
+                    android:text="42°"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_centerInParent="true"
@@ -248,7 +248,7 @@
                     android:id="@+id/textviewWeatherFour"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="80°"
+                    android:text="45°"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_centerInParent="true"
@@ -284,7 +284,7 @@
                     android:id="@+id/textviewWeatherFive"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="78°"
+                    android:text="42°"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_centerInParent="true"
@@ -318,7 +318,7 @@
                     android:id="@+id/textviewWeatherSix"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="80°"
+                    android:text="50°"
                     android:textStyle="bold"
                     android:textSize="16sp"
                     android:layout_centerInParent="true"
@@ -327,54 +327,6 @@
                     />
 
             </RelativeLayout>
-
-            <ImageView
-
-                android:id="@+id/weatherImageSeven"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_weather_icon"
-                android:layout_marginRight="10dp"
-                android:layout_centerInParent="true"
-                android:layout_below="@+id/weatherImageSix"
-
-                />
-
-            <ImageView
-
-                android:id="@+id/weatherImageEight"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_weather_icon"
-                android:layout_marginRight="10dp"
-                android:layout_centerInParent="true"
-                android:layout_below="@+id/weatherImageSeven"
-
-                />
-
-            <ImageView
-
-                android:id="@+id/weatherImageNine"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_weather_icon"
-                android:layout_marginRight="10dp"
-                android:layout_centerInParent="true"
-                android:layout_below="@+id/weatherImageEight"
-
-                />
-
-            <ImageView
-
-                android:id="@+id/weatherImageTen"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_weather_icon"
-                android:layout_marginRight="10dp"
-                android:layout_centerInParent="true"
-                android:layout_below="@+id/weatherImageNine"
-
-                />
 
 
 
