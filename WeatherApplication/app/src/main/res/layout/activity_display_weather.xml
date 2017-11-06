@@ -15,11 +15,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/activity_main"
     tools:context="androidclassproject.weatherapplication.DisplayWeather">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/btRefresh"
+        android:id="@+id/refreshButton"
+        android:layout_below="@+id/weatherSpan"/>
 
     <TextView
 
@@ -328,142 +335,6 @@
 
             </RelativeLayout>
 
-            <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/weatherLayoutEight" >
-
-                <ImageView
-
-                    android:id="@+id/weatherImageSeven"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10dp"
-                    android:layout_centerInParent="true"
-
-                    />
-
-                <TextView
-
-                    android:id="@+id/textviewWeatherSeven"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="50°"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    android:layout_below="@+id/weatherImageSeven"
-
-                    />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/weatherLayoutNine" >
-
-                <ImageView
-
-                    android:id="@+id/weatherImageEight"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10dp"
-                    android:layout_centerInParent="true"
-
-                    />
-
-                <TextView
-
-                    android:id="@+id/textviewWeatherEight"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="50°"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    android:layout_below="@+id/weatherImageEight"
-
-                    />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/weatherLayoutTen" >
-
-                <ImageView
-
-                    android:id="@+id/weatherImageNine"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10dp"
-                    android:layout_centerInParent="true"
-
-                    />
-
-                <TextView
-
-                    android:id="@+id/textviewWeatherNine"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="50°"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    android:layout_below="@+id/weatherImageNine"
-
-                    />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:id="@+id/weatherLayoutEleven" >
-
-                <ImageView
-
-                    android:id="@+id/weatherImageTen"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10dp"
-                    android:layout_centerInParent="true"
-
-                    />
-
-                <TextView
-
-                    android:id="@+id/textviewWeatherTen"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="50°"
-                    android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_centerInParent="true"
-                    android:layout_below="@+id/weatherImageTen"
-
-                    />
-
-            </RelativeLayout>
-
 
 
         </LinearLayout>
@@ -472,6 +343,7 @@
 
 
     </HorizontalScrollView>
+
 
 
 </RelativeLayout>
