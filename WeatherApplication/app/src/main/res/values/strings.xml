@@ -38,5 +38,6 @@
     <string name="about">Check</string>
     <string name="theme_title">Theme Settings</string>
     <string name="theme_summary">Select a theme.</string>
+    <string name="btRefresh">Refresh</string>
 
 </resources>
