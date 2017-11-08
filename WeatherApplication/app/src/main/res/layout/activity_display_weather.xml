@@ -20,14 +20,6 @@
     android:id="@+id/activity_main"
     tools:context="androidclassproject.weatherapplication.DisplayWeather">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/btRefresh"
-        android:id="@+id/refreshButton"
-        android:layout_below="@+id/weatherSpan"/>
-
     <TextView
 
         android:id="@+id/txtCity"
