@@ -35,8 +35,15 @@
         <item >1</item>
     </string-array>
 
+    <string name="cityCheck">Unable to obtain Location.</string>
+    <string name="lastUpdateCheck">""</string>
+    <string name="descCheck">Unable to obtain weather information.</string>
+    <string name="humidityCheck">Unable to obtain the humidity.</string>
+    <string name="timeCheck">Unable to obtain time of sunrise.</string>
+
     <string name="about">Check</string>
     <string name="theme_title">Theme Settings</string>
     <string name="theme_summary">Select a theme.</string>
+    <string name="btRefresh">Refresh</string>
 
 </resources>
