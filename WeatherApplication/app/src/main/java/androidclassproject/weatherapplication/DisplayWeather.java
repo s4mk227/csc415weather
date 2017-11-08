@@ -76,6 +76,12 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     int theme_settings = 0;
     int theme_settings_check = 0;
 
+    // Declare variables to store the sunset time, the sunrise time, and the device time.
+    long device_time = System.currentTimeMillis() / 1000;
+    double device_time_calculate = (double)device_time;
+    double sunset_time;
+    double sunrise_time;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,29 +134,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(DisplayWeather.this, new String[]{
-
-
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.SYSTEM_ALERT_WINDOW,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-
-
-            }, MY_MYPERMISSION);
-
-        }
-
-        Location location = locationManager.getLastKnownLocation(provider);
-
         new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-
-        if (location == null)
-            Log.e("Tag", "No Location");
 
     }
 
@@ -301,6 +285,17 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             display_fahrenheit = String.format("%s °F", display_fahrenheit);
             display_celsius = Double.toString(temp_celsius);
             display_celsius = String.format("%s °C", display_celsius);
+
+            // Set the sunrise and sunset times.
+            sunset_time = openWeatherMap.getSys().getSunset();
+            sunrise_time = openWeatherMap.getSys().getSunrise();
+
+            /*
+            // Convert sunrise and sunset times to long values.
+            if (device_time_calculate <= sunset_time && device_time_calculate <= sunrise_time) {
+                Log.v("check_sunset", "check");
+            }
+            */
 
             temp_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
