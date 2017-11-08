@@ -8,4 +8,7 @@
     <item android:id="@+id/menu_about"
         android:title="@string/menu_about"
         compat:showAsAction="always" />
+    <item android:id="@+id/menu_locations"
+        android:title="@string/menu_location"
+        compat:showAsAction="never" />
 </menu>
