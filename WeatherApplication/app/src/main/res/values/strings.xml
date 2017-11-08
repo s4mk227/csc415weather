@@ -35,10 +35,10 @@
         <item >1</item>
     </string-array>
 
-    <string name="cityCheck">Unable to obtain city information.</string>
-    <string name="lastUpdateCheck">Unable to obtain last update information.</string>
-    <string name="descCheck">Unable to obtain description information.</string>
-    <string name="humidityCheck">Unable to obtain humidity information.</string>
+    <string name="cityCheck">Unable to obtain Location.</string>
+    <string name="lastUpdateCheck">""</string>
+    <string name="descCheck">Unable to obtain weather information.</string>
+    <string name="humidityCheck">Unable to obtain the humidity.</string>
     <string name="timeCheck">Unable to obtain time of sunrise.</string>
 
     <string name="about">Check</string>
