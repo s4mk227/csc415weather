@@ -41,6 +41,7 @@ import android.widget.Toast;
 
 import androidclassproject.weatherapplication.Common.Common;
 import androidclassproject.weatherapplication.Helper.Helper;
+import androidclassproject.weatherapplication.Model.HourlyWeatherMap;
 import androidclassproject.weatherapplication.Model.OpenWeatherMap;
 
 public class DisplayWeather extends AppCompatActivity implements LocationListener {
@@ -72,19 +73,23 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     private SharedPreferences prefs;
 
     int MY_MYPERMISSION = 0;
-
+    TextView hourlyTexts[];
+    TextView hourlyDegreeTexts[];
+    ImageView hourlyImages[];
+    HourlyWeatherMap hourlyWeatherMap = new HourlyWeatherMap();
     int theme_settings = 0;
     int theme_settings_check = 0;
 
     // Declare variables to store the sunset time, the sunrise time, and the device time.
     long device_time = System.currentTimeMillis() / 1000;
-    double device_time_calculate = (double)device_time;
+    double device_time_calculate = (double) device_time;
     double sunset_time;
     double sunrise_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         // set the default values for the preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -103,7 +108,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             // Set the theme settings check.
             theme_settings_check = 0;
 
-        } else if (theme_settings == 1){
+        } else if (theme_settings == 1) {
 
             // Set the theme.
             setTheme(R.style.theme_dark);
@@ -119,7 +124,20 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         setContentView(R.layout.activity_display_weather);
-
+        hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
+                (TextView) findViewById(R.id.textviewWeatherTime2),(TextView)findViewById(R.id.textviewWeatherTime3)
+                ,(TextView)findViewById(R.id.textviewWeatherTime4),(TextView)findViewById(R.id.textviewWeatherTime5),
+                (TextView)findViewById(R.id.textviewWeatherTime6)
+                ,(TextView)findViewById(R.id.textviewWeatherTime7),(TextView)findViewById(R.id.textviewWeatherTime8)};
+        hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
+                (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
+                , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
+                (TextView) findViewById(R.id.textviewWeatherSix)
+                , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
+        hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
+                , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
+                (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
+                (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
         // Declare variables for the widgets on the DisplayWeather page.
         txtCity = (TextView) findViewById(R.id.txtCity);
         txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
@@ -145,7 +163,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         lng = location.getLongitude();
 
         new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-
+        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
     }
 
     @Override
@@ -257,7 +275,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     }
 
-    private class GetWeather extends AsyncTask<String,Void,String>{
+    private class GetWeather extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -272,13 +290,14 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             Gson gson = new Gson();
 
             // Create a new type token.
-            Type mType= new TypeToken<OpenWeatherMap>(){}.getType();
+            Type mType = new TypeToken<OpenWeatherMap>() {
+            }.getType();
 
             // Create an openWeatherMap object.
             openWeatherMap = gson.fromJson(s, mType);
 
             double temp_celsius = openWeatherMap.getMain().getTemp();
-            double check = (double)9/5;
+            double check = (double) 9 / 5;
             double temp_fahrenheit = temp_celsius * check + 32;
             temp_fahrenheit = Math.round(temp_fahrenheit);
             display_fahrenheit = Double.toString(temp_fahrenheit);
@@ -316,7 +335,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
-            txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
+            txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
             txtTime.setText(time_display_sunrise);
             Picasso.with(DisplayWeather.this)
@@ -342,5 +361,108 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
     }
 
+    private class GetHourlyWeather extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            // Create a new Gson object.
+            Gson gson = new Gson();
+
+            // Create a new type token.
+            Type mType = new TypeToken<HourlyWeatherMap>() {
+            }.getType();
+
+            // Create an openWeatherMap object.
+            hourlyWeatherMap = gson.fromJson(s, mType);
+            //
+            // mLayoutManager = new LinearLayoutManager(t);
+            //recyclerView.setLayoutManager(mLayoutManager);
+            //mAdapter = new HourAdapter(t,hourlyWeatherMap);
+            //recyclerView.setAdapter(mAdapter);
+            for (int i = 0; i < hourlyWeatherMap.getCnt(); i++) {
+                String text = hourlyWeatherMap.getList().get(i).getDt_txt();
+                text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
+                text = HourParseHelper(text);
+                hourlyTexts[i].setText(text);
+                double check = 1.8;
+                double temp_celsius = (int) hourlyWeatherMap.getList().get(i).getMain().getTemp();
+                double temp_fahrenheit = temp_celsius * check + 32;
+                temp_fahrenheit = Math.round(temp_fahrenheit);
+                display_fahrenheit = Double.toString(temp_fahrenheit);
+                display_fahrenheit = String.format("%s°F", display_fahrenheit);
+                display_celsius = Double.toString(temp_celsius);
+                display_celsius = String.format("%s °C", display_celsius);
+                Picasso.with(DisplayWeather.this)
+                        .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
+                        .into(hourlyImages[i]);
+                if (temp_setting == 0) {
+
+                    hourlyDegreeTexts[i].setText(display_fahrenheit);
+
+                } else {
+
+                    hourlyDegreeTexts[i].setText(display_celsius);
+
+                }
+            }
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            String stream = null;
+            String urlString = strings[0];
+
+            Helper http = new Helper();
+            stream = http.getHTTPData(urlString);
+
+            Log.e("Tag", urlString);
+
+            return stream;
+
+        }
+
+        String HourParseHelper(String s) {
+            switch (s) {
+                case "00:00":
+                    s = "12:00am";
+                    break;
+                case "03:00":
+                    s = "3:00am";
+                    break;
+                case "06:00":
+                    s = "6:00am";
+                    break;
+                case "09:00":
+                    s = "9:00am";
+                    break;
+                case "12:00":
+                    s = "12:00pm";
+                    break;
+                case "15:00":
+                    s = "3:00pm";
+                    break;
+                case "18:00":
+                    s = "6:00pm";
+                    break;
+                case "21:00":
+                    s = "9:00pm";
+                    break;
+                default:
+                    s = "";
+            }
+            return s;
+        }
+
+    }
 }
 //Holden's commit test

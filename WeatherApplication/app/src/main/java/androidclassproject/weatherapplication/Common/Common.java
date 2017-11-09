@@ -17,7 +17,7 @@ public class Common {
 
     public static String API_KEY = "0c057307ae0472c51398d8e7cbc818f0";
     public static String API_LINK = "http://api.openweathermap.org/data/2.5/weather";
-
+    public static String API_LINK1 = "http://api.openweathermap.org/data/2.5/";
     @NonNull
     public static String apiRequest(String lat, String lng){
 
@@ -26,7 +26,14 @@ public class Common {
         return sb.toString();
 
     }
+    @NonNull
+    public static String hourlyRequest(String lat, String lng){
 
+        StringBuilder sb = new StringBuilder(API_LINK1);
+        sb.append(String.format("forecast?lat=%s&lon=%s&appid=%s&units=metric&cnt=8",lat,lng, API_KEY));
+        return sb.toString();
+
+    }
     public static String unixTimeStampToDateTime(double unixTimeStamp){
 
         DateFormat dateFormat = new SimpleDateFormat("HH:mm a");
