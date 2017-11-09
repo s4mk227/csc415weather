@@ -12,15 +12,7 @@ public class Sys {
     private String country;
     private double sunrise;
     private double sunset;
-    private String pod;
-    public Sys()
-    {
 
-    }
-    public Sys(String pod)
-    {
-        this.pod = pod;
-    }
     public Sys(int type, int id, double message, String country, double sunrise, double sunset) {
         this.type = type;
         this.id = id;
