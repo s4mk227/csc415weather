@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Weather</string>
+    <string name="app_name">WeatherApplication</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_about">About</string>
 
@@ -26,24 +26,6 @@
         <item >1</item>
     </string-array>
 
-    <string-array name="theme_options">
-        <item >Light</item>
-        <item >Dark</item>
-    </string-array>
-    <string-array name="theme_values">
-        <item >0</item>
-        <item >1</item>
-    </string-array>
-
-    <string name="cityCheck">Unable to obtain Location.</string>
-    <string name="lastUpdateCheck">""</string>
-    <string name="descCheck">Unable to obtain weather information.</string>
-    <string name="humidityCheck">Unable to obtain the humidity.</string>
-    <string name="timeCheck">Unable to obtain time of sunrise.</string>
-
     <string name="about">Check</string>
-    <string name="theme_title">Theme Settings</string>
-    <string name="theme_summary">Select a theme.</string>
-    <string name="btRefresh">Refresh</string>
 
 </resources>

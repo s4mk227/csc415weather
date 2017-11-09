@@ -17,13 +17,4 @@
         android:entries="@array/time_options"
         android:entryValues="@array/time_values"
         android:defaultValue="0" />
-
-    <ListPreference
-        android:key="pref_theme"
-        android:title="@string/theme_title"
-        android:summary="@string/theme_summary"
-        android:dialogTitle="@string/theme_title"
-        android:entries="@array/theme_options"
-        android:entryValues="@array/theme_values"
-        android:defaultValue="0" />
 </PreferenceScreen>

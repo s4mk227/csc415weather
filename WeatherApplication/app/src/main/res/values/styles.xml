@@ -8,14 +8,4 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="theme_light" parent="Theme.AppCompat.Light">
-        <item name="android:textColor">#000</item>
-    </style>
-
-    <style name="theme_dark" parent="Theme.AppCompat">
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textColor">#fff</item>
-        <item name="android:background">#00264d</item>
-    </style>
-
 </resources>
