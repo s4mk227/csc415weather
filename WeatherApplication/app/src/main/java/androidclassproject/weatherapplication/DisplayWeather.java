@@ -245,7 +245,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             txtCelsius.setText(display_celsius);
 
         }
-
+        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
         time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
         // Store the value of the theme.
