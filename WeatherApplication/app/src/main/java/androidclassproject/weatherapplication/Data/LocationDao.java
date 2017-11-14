@@ -4,6 +4,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.database.Cursor;
 
 import java.util.List;
 
@@ -11,11 +12,17 @@ import java.util.List;
 public interface LocationDao {
 
     @Query("SELECT * FROM SavedLocation")
+    Cursor getLocationCursor();
+
+    @Query("SELECT * FROM SavedLocation")
     List<SavedLocation> getAll();
 
+    //@Query("SELECT location FROM SavedLocation")
+    //List<SavedLocation> getAllLocations();
+
     @Delete
-    public void deleteLocation(SavedLocation location);
+    void deleteLocation(SavedLocation... location);
 
     @Insert
-    public void newLocation(SavedLocation location);
+    void insertLocation(SavedLocation... location);
 }

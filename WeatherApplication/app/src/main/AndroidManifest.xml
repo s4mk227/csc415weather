@@ -36,6 +36,11 @@
             android:label="About" >
         </activity>
 
+        <activity
+            android:name="androidclassproject.weatherapplication.LocationActivity"
+            android:label="Saved Locations" >
+        </activity>
+
     </application>
 
 </manifest>

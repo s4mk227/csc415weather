@@ -136,9 +136,9 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         txtTime = (TextView) findViewById(R.id.txtTime);
         txtCelsius = (TextView) findViewById(R.id.txtCelsius);
         imageView = (ImageView) findViewById(R.id.imageView);
-        refreshButton = (Button)findViewById(R.id.refreshButton);
+        //refreshButton = (Button)findViewById(R.id.refreshButton);
         // Set OnClickListener for the button
-        refreshButton.setOnClickListener(this);
+        //refreshButton.setOnClickListener(this);
 
 
 
@@ -214,6 +214,13 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 return true;
             case R.id.menu_about:
                 startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+                return true;
+            case R.id.menu_locations:
+                Intent locationActivity = new Intent(getApplicationContext(), LocationActivity.class);
+                //Include longitude and latitude so the current location can be saved if desired
+                locationActivity.putExtra("current_longitude", lng);
+                locationActivity.putExtra("current_latitude", lat);
+                startActivity(locationActivity);
                 return true;
 
             default:

@@ -47,4 +47,9 @@ public class SavedLocation {
     public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
+
+    @Override
+    public String toString() {
+        return location + " " + latitude + " " + longitude;
+    }
 }
