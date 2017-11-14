@@ -3,7 +3,6 @@ package androidclassproject.weatherapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
@@ -20,8 +19,6 @@ import android.content.Context;
 import android.util.Log;
 import android.support.v4.app.ActivityCompat;
 import android.os.AsyncTask;
-
-import java.io.IOException;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 import android.view.View;
@@ -34,10 +31,7 @@ import android.content.SharedPreferences.Editor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -47,27 +41,22 @@ import android.widget.Toast;
 
 import androidclassproject.weatherapplication.Common.Common;
 import androidclassproject.weatherapplication.Helper.Helper;
+import androidclassproject.weatherapplication.Model.HourlyWeatherMap;
 import androidclassproject.weatherapplication.Model.OpenWeatherMap;
-import androidclassproject.weatherapplication.Model.Weather;
 
-public class DisplayWeather extends AppCompatActivity implements LocationListener, View.OnClickListener {
+public class DisplayWeather extends AppCompatActivity implements LocationListener {
 
-    // Declare variables for the widgets on the DisplayWeather page.
+    // Declare varaibles for the widgets on the DisplayWeather page.
     TextView txtCity, txtLastUpdate, txtDescription, txtHumidity, txtTime, txtCelsius;
     ImageView imageView;
-    Button refreshButton;
 
-    // Declare a location manager, provider, and location variables.
+    // Declare a location manager varible.
     LocationManager locationManager;
     String provider;
-    Location location;
 
-    // Declare variables to store the latitude and longitude values.
+    // Declare variables to store the latitude and longitude vales.
     static double lat = 0;
     static double lng = 0;
-
-    // Declare variables determining if location services are enabled or not.
-    boolean networkLocationEnabled, gpsLocationEnabled;
 
     // Declare a new OpenWeatherMap object.
     OpenWeatherMap openWeatherMap = new OpenWeatherMap();
@@ -77,7 +66,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     String display_celsius = "";
     String time_display_sunrise = "";
     String temp_time_display = "";
-    String city,lastUpdate,description, humidity;
 
     int temp_setting = 0;
     int time_setting = 0;
@@ -85,13 +73,23 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     private SharedPreferences prefs;
 
     int MY_MYPERMISSION = 0;
-
+    TextView hourlyTexts[];
+    TextView hourlyDegreeTexts[];
+    ImageView hourlyImages[];
+    HourlyWeatherMap hourlyWeatherMap = new HourlyWeatherMap();
     int theme_settings = 0;
     int theme_settings_check = 0;
+
+    // Declare variables to store the sunset time, the sunrise time, and the device time.
+    long device_time = System.currentTimeMillis() / 1000;
+    double device_time_calculate = (double) device_time;
+    double sunset_time;
+    double sunrise_time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         // set the default values for the preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -110,7 +108,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             // Set the theme settings check.
             theme_settings_check = 0;
 
-        } else if (theme_settings == 1){
+        } else if (theme_settings == 1) {
 
             // Set the theme.
             setTheme(R.style.theme_dark);
@@ -126,8 +124,20 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         setContentView(R.layout.activity_display_weather);
-
-
+        hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
+                (TextView) findViewById(R.id.textviewWeatherTime2),(TextView)findViewById(R.id.textviewWeatherTime3)
+                ,(TextView)findViewById(R.id.textviewWeatherTime4),(TextView)findViewById(R.id.textviewWeatherTime5),
+                (TextView)findViewById(R.id.textviewWeatherTime6)
+                ,(TextView)findViewById(R.id.textviewWeatherTime7),(TextView)findViewById(R.id.textviewWeatherTime8)};
+        hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
+                (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
+                , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
+                (TextView) findViewById(R.id.textviewWeatherSix)
+                , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
+        hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
+                , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
+                (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
+                (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
         // Declare variables for the widgets on the DisplayWeather page.
         txtCity = (TextView) findViewById(R.id.txtCity);
         txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
@@ -136,57 +146,14 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         txtTime = (TextView) findViewById(R.id.txtTime);
         txtCelsius = (TextView) findViewById(R.id.txtCelsius);
         imageView = (ImageView) findViewById(R.id.imageView);
-        //refreshButton = (Button)findViewById(R.id.refreshButton);
-        // Set OnClickListener for the button
-        //refreshButton.setOnClickListener(this);
-
 
 
         // Get the user's coordinates.
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
 
-            ActivityCompat.requestPermissions(DisplayWeather.this, new String[]{
-
-
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.SYSTEM_ALERT_WINDOW,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-
-
-            }, MY_MYPERMISSION);
-
-        }
-
-        // Check if location is enabled or not
-        networkLocationEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        gpsLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        // If either is enabled, try to get last known location
-        if (networkLocationEnabled || gpsLocationEnabled) {
-            location = locationManager.getLastKnownLocation(provider);
-            if (location != null) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
-                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-            }
-            // There was no last known location for this device, so wait for onLocationChanged to be called
-            else {
-                Log.e("Tag", "No Location");
-                Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
-                t.show();
-            }
-        }
-        // Do nothing if location services are not enabled.
-        else{
-            Toast t = Toast.makeText(this, "Enable location services and try again.", Toast.LENGTH_SHORT);
-            t.show();
-        }
     }
 
     @Override
@@ -196,7 +163,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         lng = location.getLongitude();
 
         new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-
+        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
     }
 
     @Override
@@ -285,7 +252,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             txtCelsius.setText(display_celsius);
 
         }
-
+        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
         time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
         // Store the value of the theme.
@@ -315,44 +282,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     }
 
-    @Override
-    public void onClick(View view) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(DisplayWeather.this, new String[]{
-
-
-                    Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_NETWORK_STATE,
-                    Manifest.permission.SYSTEM_ALERT_WINDOW,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-
-
-            }, MY_MYPERMISSION);
-
-        }
-        networkLocationEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-        gpsLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        if (networkLocationEnabled || gpsLocationEnabled) {
-            location = locationManager.getLastKnownLocation(provider);
-            if (location != null) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
-                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-            }
-            else {
-                Log.e("Tag", "No Location");
-                Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
-                t.show();
-            }
-        }
-
-    }
-
-    private class GetWeather extends AsyncTask<String,Void,String>{
+    private class GetWeather extends AsyncTask<String, Void, String> {
 
         @Override
         protected void onPreExecute() {
@@ -367,19 +297,31 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             Gson gson = new Gson();
 
             // Create a new type token.
-            Type mType= new TypeToken<OpenWeatherMap>(){}.getType();
+            Type mType = new TypeToken<OpenWeatherMap>() {
+            }.getType();
 
             // Create an openWeatherMap object.
             openWeatherMap = gson.fromJson(s, mType);
 
             double temp_celsius = openWeatherMap.getMain().getTemp();
-            double check = (double)9/5;
+            double check = (double) 9 / 5;
             double temp_fahrenheit = temp_celsius * check + 32;
             temp_fahrenheit = Math.round(temp_fahrenheit);
             display_fahrenheit = Double.toString(temp_fahrenheit);
             display_fahrenheit = String.format("%s °F", display_fahrenheit);
             display_celsius = Double.toString(temp_celsius);
             display_celsius = String.format("%s °C", display_celsius);
+
+            // Set the sunrise and sunset times.
+            sunset_time = openWeatherMap.getSys().getSunset();
+            sunrise_time = openWeatherMap.getSys().getSunrise();
+
+            /*
+            // Convert sunrise and sunset times to long values.
+            if (device_time_calculate <= sunset_time && device_time_calculate <= sunrise_time) {
+                Log.v("check_sunset", "check");
+            }
+            */
 
             temp_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
@@ -396,85 +338,18 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             time_setting = Integer.parseInt(prefs.getString("pref_temperature", "0"));
 
             time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
-
-            if(time_display_sunrise == null)
-                txtTime.setText(getResources().getString(R.string.timeCheck));
-            else
-                txtTime.setText(time_display_sunrise);
-
             temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
 
             txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
-            txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
+            txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
             txtTime.setText(time_display_sunrise);
-            /*Picasso.with(DisplayWeather.this)
+            Picasso.with(DisplayWeather.this)
                     .load(Common.getImage(openWeatherMap.getWeather().get(0).getIcon()))
                     .into(imageView);
-            Load weather icons locally*/
-            setIcon(openWeatherMap.getWeather().get(0));
 
-            city = String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry());
-            lastUpdate = String.format("Last Update: %s", Common.getDateNow());
-            description = String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase()
-                    + openWeatherMap.getWeather().get(0).getDescription().substring(1));
-            humidity = String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity());
 
-            if(city == null)
-                txtCity.setText(getResources().getString(R.string.cityCheck));
-            else
-                txtCity.setText(city);
-
-            if(lastUpdate == null)
-                txtLastUpdate.setText(getResources().getString(R.string.lastUpdateCheck));
-            else
-                txtLastUpdate.setText(lastUpdate);
-
-            if(description == null)
-                txtDescription.setText(getResources().getString(R.string.descCheck));
-            else
-                txtDescription.setText(description);
-
-            if(humidity == null)
-                txtHumidity.setText(getResources().getString(R.string.humidityCheck));
-            else
-                txtHumidity.setText(humidity);
-
-        }
-
-        public void setIcon(Weather weather){
-            // Get the weather description
-            String str = weather.getDescription();
-            // Look at the string to determine the proper icon
-            String icon = checkString(str);
-            // Get project resources
-            Resources res = getResources();
-            int resID = res.getIdentifier(icon, "drawable", getPackageName());
-            imageView.setImageResource(resID);
-        }
-
-        public String checkString(String str){
-            //Android Studio bitched that the files didn't start with letters, so I changed 1 to i and 0 to o
-            //Need to change file names to something understandable
-            if (str.contains("thunderstorm"))
-                return "i1d";
-            else if (str.contains("drizzle") || str.contains("shower"))
-                return "o9d";
-            else if (str.contains("freezing rain") || str.contains("snow") || str.contains("sleet"))
-                return "i3d";
-            else if ((str.contains("rain"))) //above weathers contain 'rain' but have other words in common, so if str contains none of those and it contains 'rain' here then the icon is known
-                return "i0d";
-            else if (str.contains("broken") || str.contains("overcast"))
-                return "o4d";
-            else if (str.equals("scattered clouds"))
-                return "o3d";
-            else if (str.equals("few clouds"))
-                return "o2d";
-            else if (str.equals("clear sky"))
-                return "o1d";
-            else
-                return "s0d";
         }
 
         @Override
@@ -493,5 +368,108 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
     }
 
+    private class GetHourlyWeather extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+
+            // Create a new Gson object.
+            Gson gson = new Gson();
+
+            // Create a new type token.
+            Type mType = new TypeToken<HourlyWeatherMap>() {
+            }.getType();
+
+            // Create an openWeatherMap object.
+            hourlyWeatherMap = gson.fromJson(s, mType);
+            //
+            // mLayoutManager = new LinearLayoutManager(t);
+            //recyclerView.setLayoutManager(mLayoutManager);
+            //mAdapter = new HourAdapter(t,hourlyWeatherMap);
+            //recyclerView.setAdapter(mAdapter);
+            for (int i = 0; i < hourlyWeatherMap.getCnt(); i++) {
+                String text = hourlyWeatherMap.getList().get(i).getDt_txt();
+                text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
+                text = HourParseHelper(text);
+                hourlyTexts[i].setText(text);
+                double check = 1.8;
+                double temp_celsius = (int) hourlyWeatherMap.getList().get(i).getMain().getTemp();
+                double temp_fahrenheit = temp_celsius * check + 32;
+                temp_fahrenheit = Math.round(temp_fahrenheit);
+                display_fahrenheit = Double.toString(temp_fahrenheit);
+                display_fahrenheit = String.format("%s°F", display_fahrenheit);
+                display_celsius = Double.toString(temp_celsius);
+                display_celsius = String.format("%s °C", display_celsius);
+                Picasso.with(DisplayWeather.this)
+                        .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
+                        .into(hourlyImages[i]);
+                if (temp_setting == 0) {
+
+                    hourlyDegreeTexts[i].setText(display_fahrenheit);
+
+                } else {
+
+                    hourlyDegreeTexts[i].setText(display_celsius);
+
+                }
+            }
+
+
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            String stream = null;
+            String urlString = strings[0];
+
+            Helper http = new Helper();
+            stream = http.getHTTPData(urlString);
+
+            Log.e("Tag", urlString);
+
+            return stream;
+
+        }
+
+        String HourParseHelper(String s) {
+            switch (s) {
+                case "00:00":
+                    s = "12:00am";
+                    break;
+                case "03:00":
+                    s = "3:00am";
+                    break;
+                case "06:00":
+                    s = "6:00am";
+                    break;
+                case "09:00":
+                    s = "9:00am";
+                    break;
+                case "12:00":
+                    s = "12:00pm";
+                    break;
+                case "15:00":
+                    s = "3:00pm";
+                    break;
+                case "18:00":
+                    s = "6:00pm";
+                    break;
+                case "21:00":
+                    s = "9:00pm";
+                    break;
+                default:
+                    s = "";
+            }
+            return s;
+        }
+
+    }
 }
 //Holden's commit test
