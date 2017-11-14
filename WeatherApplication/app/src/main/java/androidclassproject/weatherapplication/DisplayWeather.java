@@ -177,7 +177,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             }
             // There was no last known location for this device, so wait for onLocationChanged to be called
             else {
-                Log.e("Tag", "No SavedLocation");
+                Log.e("Tag", "No Location");
                 Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
                 t.show();
             }
@@ -337,7 +337,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
             }
             else {
-                Log.e("Tag", "No SavedLocation");
+                Log.e("Tag", "No Location");
                 Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
                 t.show();
             }
