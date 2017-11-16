@@ -30,7 +30,7 @@ public class Common {
     public static String hourlyRequest(String lat, String lng){
 
         StringBuilder sb = new StringBuilder(API_LINK1);
-        sb.append(String.format("forecast?lat=%s&lon=%s&appid=%s&units=metric&cnt=8",lat,lng, API_KEY));
+        sb.append(String.format("forecast?lat=%s&lon=%s&appid=%s&units=metric&cnt=16",lat,lng, API_KEY));
         return sb.toString();
 
     }
