@@ -3,6 +3,7 @@ package androidclassproject.weatherapplication;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
@@ -12,37 +13,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.ImageView;
-import android.widget.Button;
 import android.location.LocationManager;
 import android.location.LocationListener;
 import android.content.Context;
 import android.util.Log;
-import android.support.v4.app.ActivityCompat;
 import android.os.AsyncTask;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
-import android.view.View;
 import android.preference.PreferenceManager;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
-
-import android.util.Log;
 import android.widget.Toast;
 
 import androidclassproject.weatherapplication.Common.Common;
 import androidclassproject.weatherapplication.Helper.Helper;
 import androidclassproject.weatherapplication.Model.HourlyWeatherMap;
 import androidclassproject.weatherapplication.Model.OpenWeatherMap;
+import androidclassproject.weatherapplication.Model.Weather;
 
 public class DisplayWeather extends AppCompatActivity implements LocationListener {
 
@@ -57,6 +50,9 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     // Declare variables to store the latitude and longitude vales.
     static double lat = 0;
     static double lng = 0;
+
+    // Declare variables to determine if location services are enabled or not
+    boolean networkLocationEnabled, gpsLocationEnabled;
 
     // Declare a new OpenWeatherMap object.
     OpenWeatherMap openWeatherMap = new OpenWeatherMap();
@@ -152,8 +148,48 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
 
-        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+            ActivityCompat.requestPermissions(DisplayWeather.this, new String[]{
+
+
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.SYSTEM_ALERT_WINDOW,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+
+
+            }, MY_MYPERMISSION);
+
+        }
+
+        // Check if location is enabled or not
+        networkLocationEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        gpsLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        Location location = null;
+
+        // If either is enabled, try to get last known location
+        if (networkLocationEnabled || gpsLocationEnabled) {
+            location = locationManager.getLastKnownLocation(provider);
+            if (location != null) {
+                lat = location.getLatitude();
+                lng = location.getLongitude();
+                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+                new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+            }
+            // There was no last known location for this device, so wait for onLocationChanged to be called
+            else {
+                Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
+                t.show();
+            }
+        }
+        // Do nothing if location services are not enabled.
+        else{
+            Toast t = Toast.makeText(this, "Enable location services and try again.", Toast.LENGTH_SHORT);
+            t.show();
+        }
     }
 
     @Override
@@ -338,11 +374,19 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
             txtTime.setText(time_display_sunrise);
-            Picasso.with(DisplayWeather.this)
+            /*Picasso.with(DisplayWeather.this)
                     .load(Common.getImage(openWeatherMap.getWeather().get(0).getIcon()))
-                    .into(imageView);
+                    .into(imageView);*/
 
-
+            //Load icons locally
+            String now = String.format(Common.getDateNow());
+            now = now.substring(11, now.length());
+            try {
+                setIcon(openWeatherMap.getWeather().get(0), imageView, now);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Log.e("TAG", "GetWeather: Error parsing string for setIcon");
+            }
         }
 
         @Override
@@ -389,6 +433,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             for (int i = 0; i < hourlyWeatherMap.getCnt(); i++) {
                 String text = hourlyWeatherMap.getList().get(i).getDt_txt();
                 text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
+                String tfhTime = text;
                 text = HourParseHelper(text);
                 hourlyTexts[i].setText(text);
                 double check = 1.8;
@@ -399,9 +444,16 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 display_fahrenheit = String.format("%s°F", display_fahrenheit);
                 display_celsius = Double.toString(temp_celsius);
                 display_celsius = String.format("%s °C", display_celsius);
-                Picasso.with(DisplayWeather.this)
+                /*Picasso.with(DisplayWeather.this)
                         .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
-                        .into(hourlyImages[i]);
+                        .into(hourlyImages[i]);*/
+                try {
+                    setIcon(hourlyWeatherMap.getList().get(i).getWeather().get(0), hourlyImages[i], tfhTime);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Log.e("TAG", "GetHourlyWeather: Error parsing string for setIcon");
+                }
+
                 if (temp_setting == 0) {
 
                     hourlyDegreeTexts[i].setText(display_fahrenheit);
@@ -412,8 +464,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
                 }
             }
-
-
+            
         }
 
         @Override
@@ -464,5 +515,99 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
 
     }
+    public void setIcon(Weather weather, ImageView imgView, String time) throws ParseException{
+
+        // Get the weather description
+        String str = weather.getDescription();
+
+        // Look at the string to determine the proper icon
+        String icon = checkString(str, time);
+
+        // Get project resources
+        Resources res = getResources();
+
+        // Get resourceID for the icon
+        int resID = res.getIdentifier(icon, "drawable", getPackageName());
+
+        // Set the imageview with the corresponding icon
+        imgView.setImageResource(resID);
+    }
+
+    public boolean checkNightTime(String currentTime) throws ParseException{
+        //All dates that come out of this are Jan 1, 1970, but the times are all that matters and it works
+
+        // Get sunrise time and set it to a date
+        String sunrise = Common.unixTimeStampToDateTime(sunrise_time);
+        Date sunriseDate = new SimpleDateFormat("HH:mm").parse(sunrise.substring(0, sunrise.length()-3));
+        Calendar sRise = Calendar.getInstance();
+        sRise.setTime(sunriseDate);
+
+        // Get sunset time and set it to a date
+        String sunset = Common.unixTimeStampToDateTime(sunset_time);
+        Date sunsetDate = new SimpleDateFormat("HH:mm").parse(sunset.substring(0, sunset.length()-3));
+        Calendar sSet = Calendar.getInstance();
+        sSet.setTime(sunsetDate);
+
+        // Get time now and set it to a date
+        Date nowDate = new SimpleDateFormat("HH:mm").parse(currentTime);
+        Calendar dateNow = Calendar.getInstance();
+        dateNow.setTime(nowDate);
+
+        // If the time now is after the sunrise time but before sunset time, it's day, otherwise it's night
+        if (dateNow.after(sRise) && dateNow.before(sSet))
+            return false;
+        else
+            return true;
+    }
+
+    public String checkString(String str, String time) throws ParseException {
+        // Thunderstorm icon
+        if (str.contains("thunderstorm"))
+            return "lightning";
+
+            // Rain icon with no sun or moon
+        else if (str.contains("drizzle") || str.contains("shower"))
+            return "drizzle";
+
+            // Snow icon
+        else if (str.contains("freezing rain") || str.contains("snow") || str.contains("sleet"))
+            return "snow";
+
+            // Rain icon with sun or moon
+        else if ((str.contains("rain"))){ //above weathers contain 'rain' but have other words in common, so if str contains none of those and it contains 'rain' here then the icon is known
+            if (checkNightTime(time))
+                return "rainnight";
+            else
+                return "rainday";
+        }
+
+        // Overcast clouds icon
+        else if (str.contains("broken") || str.contains("overcast"))
+            return "overcast";
+
+            // Scattered clouds icon
+        else if (str.equals("scattered clouds"))
+            return "clouds";
+
+            // Cloud icon with sun or moon
+        else if (str.equals("few clouds")) {
+            if (checkNightTime(time))
+                return "fewcloudnight";
+            else
+                return "fewcloudday";
+        }
+
+        // Clear sky icon with sun or moon
+        else if (str.equals("clear sky")) {
+            if (checkNightTime(time))
+                return "clearnight";
+            else
+                return "clearday";
+        }
+
+        // Fog/Mist/whatever it is. The squiggly lines
+        else
+            return "fog";
+    }
+
 }
-//Holden's commit test
