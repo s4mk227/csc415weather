@@ -62,6 +62,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     String display_celsius = "";
     String time_display_sunrise = "";
     String temp_time_display = "";
+    String city, lastUpdate, description, humidity;
 
     int temp_setting = 0;
     int time_setting = 0;
@@ -368,7 +369,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
             temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
-
             txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
@@ -387,6 +387,33 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 e.printStackTrace();
                 Log.e("TAG", "GetWeather: Error parsing string for setIcon");
             }
+
+            city = String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry());
+            lastUpdate = String.format("Last Update: %s", Common.getDateNow());
+            description = String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0,1).toUpperCase()
+                    + openWeatherMap.getWeather().get(0).getDescription().substring(1));
+            humidity = String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity());
+
+            if(city == null)
+                txtCity.setText(getResources().getString(R.string.cityCheck));
+            else
+                txtCity.setText(city);
+
+            if(lastUpdate == null)
+                txtLastUpdate.setText(getResources().getString(R.string.lastUpdateCheck));
+            else
+                txtLastUpdate.setText(lastUpdate);
+
+            if(description == null)
+                txtDescription.setText(getResources().getString(R.string.descCheck));
+            else
+                txtDescription.setText(description);
+
+            if(humidity == null)
+                txtHumidity.setText(getResources().getString(R.string.humidityCheck));
+            else
+                txtHumidity.setText(humidity);
+            
         }
 
         @Override
