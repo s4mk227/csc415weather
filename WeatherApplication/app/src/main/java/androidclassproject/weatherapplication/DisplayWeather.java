@@ -13,8 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.HorizontalScrollView;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ImageView;
 import android.location.LocationManager;
@@ -48,11 +52,12 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     // Declare varaibles for the widgets on the DisplayWeather page.
     TextView txtCity, txtLastUpdate, txtDescription, txtHumidity, txtTime, txtCelsius;
     ImageView imageView;
-
+    HorizontalScrollView scroll;
     // Declare a location manager varible.
     LocationManager locationManager;
     String provider;
-
+    int height;
+    RelativeLayout hourlyLayouts[];
     // Declare variables to store the latitude and longitude vales.
     static double lat = 0;
     static double lng = 0;
@@ -69,7 +74,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     String time_display_sunrise = "";
     String temp_time_display = "";
     String city, lastUpdate, description, humidity;
-
+    boolean big = true;
     int temp_setting = 0;
     int time_setting = 0;
 
@@ -120,7 +125,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             // Set the theme settings check.
             theme_settings_check = 1;
-
         }
 
         // Display the application icon in the title bar.
@@ -130,10 +134,24 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
         setContentView(R.layout.activity_display_weather);
         config = this.getResources().getConfiguration();
-
-        if (config.smallestScreenWidthDp >= 600)
+        if(config.smallestScreenWidthDp < 600)
         {
-            DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            /*DisplayMetrics displayMetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            height = displayMetrics.heightPixels;*/
+            big = false;
+            scroll = (HorizontalScrollView)findViewById(R.id.weatherSpan);
+            scroll.setMinimumHeight(300);
+        }
+        else
+        {
+            //scroll = (HorizontalScrollView)findViewById(R.id.weatherSpan);
+            //scroll.setMinimumHeight(400);
+        }
+        if (config.smallestScreenWidthDp >= 600 && config.orientation == Configuration.ORIENTATION_LANDSCAPE)
+        {
+            setContentView(R.layout.activity_display_weather2);
+            //DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
             txtCity = (TextView) findViewById(R.id.txtCity);
             txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
             txtDescription = (TextView) findViewById(R.id.txtDescription);
@@ -150,7 +168,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         else
         {
             // fall-back code goes here
-
             hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
                     (TextView) findViewById(R.id.textviewWeatherTime2), (TextView) findViewById(R.id.textviewWeatherTime3)
                     , (TextView) findViewById(R.id.textviewWeatherTime4), (TextView) findViewById(R.id.textviewWeatherTime5),
@@ -165,6 +182,10 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                     , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
                     (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
                     (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
+            hourlyLayouts = new RelativeLayout[]{(RelativeLayout)findViewById(R.id.weatherLayoutOne),(RelativeLayout)findViewById(R.id.weatherLayoutTwo)
+                    ,(RelativeLayout)findViewById(R.id.weatherLayoutThree),(RelativeLayout)findViewById(R.id.weatherLayoutFour)
+            ,(RelativeLayout)findViewById(R.id.weatherLayoutSix),(RelativeLayout)findViewById(R.id.weatherLayoutSeven),(RelativeLayout)findViewById(R.id.weatherLayoutEight)
+            ,(RelativeLayout)findViewById(R.id.weatherLayoutNine)};
             // Declare variables for the widgets on the DisplayWeather page.
             txtCity = (TextView) findViewById(R.id.txtCity);
             txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
@@ -229,6 +250,61 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+        // Checks the orientation of the screen
+        if(big != false)
+        {
+            if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE && config.smallestScreenWidthDp >= 600) {
+                setContentView(R.layout.activity_display_weather2);
+                DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                txtCity = (TextView) findViewById(R.id.txtCity);
+                txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+                txtDescription = (TextView) findViewById(R.id.txtDescription);
+                txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+                txtTime = (TextView) findViewById(R.id.txtTime);
+                txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+                imageView = (ImageView) findViewById(R.id.imageView);
+                config = newConfig;
+                // Get the user's coordinates.
+                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+                new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+            } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+                setContentView(R.layout.activity_display_weather);
+                hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
+                        (TextView) findViewById(R.id.textviewWeatherTime2), (TextView) findViewById(R.id.textviewWeatherTime3)
+                        , (TextView) findViewById(R.id.textviewWeatherTime4), (TextView) findViewById(R.id.textviewWeatherTime5),
+                        (TextView) findViewById(R.id.textviewWeatherTime6)
+                        , (TextView) findViewById(R.id.textviewWeatherTime7), (TextView) findViewById(R.id.textviewWeatherTime8)};
+                hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
+                        (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
+                        , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
+                        (TextView) findViewById(R.id.textviewWeatherSix)
+                        , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
+                hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
+                        , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
+                        (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
+                        (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
+                hourlyLayouts = new RelativeLayout[]{(RelativeLayout)findViewById(R.id.weatherLayoutOne),(RelativeLayout)findViewById(R.id.weatherLayoutTwo)
+                        ,(RelativeLayout)findViewById(R.id.weatherLayoutThree),(RelativeLayout)findViewById(R.id.weatherLayoutFour)
+                        ,(RelativeLayout)findViewById(R.id.weatherLayoutSix),(RelativeLayout)findViewById(R.id.weatherLayoutSeven),(RelativeLayout)findViewById(R.id.weatherLayoutEight)
+                        ,(RelativeLayout)findViewById(R.id.weatherLayoutNine)};
+                // Declare variables for the widgets on the DisplayWeather page.
+                txtCity = (TextView) findViewById(R.id.txtCity);
+                txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+                txtDescription = (TextView) findViewById(R.id.txtDescription);
+                txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+                txtTime = (TextView) findViewById(R.id.txtTime);
+                txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+                imageView = (ImageView) findViewById(R.id.imageView);
+                config = newConfig;
+                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+                new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+            }
+        }
+    }
     @Override
     public void onLocationChanged(Location location) {
 
@@ -493,9 +569,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             //recyclerView.setLayoutManager(mLayoutManager);
             //mAdapter = new HourAdapter(t,hourlyWeatherMap);
             //recyclerView.setAdapter(mAdapter);
-            if (config.smallestScreenWidthDp >= 600)
+            if (config.smallestScreenWidthDp >= 600 && config.orientation == Configuration.ORIENTATION_LANDSCAPE)
             {
-                DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                 mLayoutManager = new LinearLayoutManager(DisplayWeather.this);
                 recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
                 mAdapter = new HourAdapter(DisplayWeather.this, hourlyWeatherMap);
@@ -508,6 +583,20 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             {
                 for (int i = 0; i < 8; i++)
                 {
+                    if(big)
+                    {
+                        hourlyTexts[i].setTextSize(28);
+                        hourlyDegreeTexts[i].setTextSize(28);
+                        hourlyImages[i].setMinimumHeight(80);
+                        hourlyImages[i].setMinimumWidth(80);
+                        hourlyLayouts[i].setMinimumWidth(250);
+                        hourlyLayouts[i].setPadding(0,0,16,0);
+                    }
+                    else
+                    {
+                        hourlyTexts[i].setMinimumHeight(100);
+                        hourlyDegreeTexts[i].setMinimumHeight(100);
+                    }
                     String text = hourlyWeatherMap.getList().get(i).getDt_txt();
                     text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
                     text = HourParseHelper(text);
