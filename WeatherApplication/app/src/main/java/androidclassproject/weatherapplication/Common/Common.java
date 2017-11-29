@@ -15,7 +15,7 @@ public class Common {
     // http://openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=b1b15e88fa797225412429c1c50c122a1
 
 
-    public static String API_KEY = "0c057307ae0472c51398d8e7cbc818f0";
+    public static String API_KEY = "6ba8de16bfaf48f0ba036856b1da58b0";
     public static String API_LINK = "http://api.openweathermap.org/data/2.5/weather";
     public static String API_LINK1 = "http://api.openweathermap.org/data/2.5/";
     @NonNull

@@ -9,14 +9,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/scrollViewDisplayWeather"
-    android:fillViewport="true">
+    android:id="@+id/scrollViewDisplayWeather">
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/activity_main"
     tools:context="androidclassproject.weatherapplication.DisplayWeather">
@@ -108,33 +107,31 @@
         android:layout_below="@+id/txtTime"
 
         />
-
     <HorizontalScrollView
         android:id="@+id/weatherSpan"
         android:layout_below="@+id/txtCelsius"
         android:layout_marginTop="5dp"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:fillViewport="true">
+        android:layout_height="160dp">
 
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:orientation="horizontal"
             >
 
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutOne" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -146,18 +143,18 @@
                 <ImageView
 
                     android:id="@+id/weatherImageOne"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginLeft="8sp"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
                     />
 
                 <TextView
 
                     android:id="@+id/textviewWeatherOne"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="80°"
                     android:textStyle="bold"
@@ -172,14 +169,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutTwo" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime2"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="3am"
                     android:textStyle="bold"
@@ -191,10 +188,10 @@
                 <ImageView
 
                     android:id="@+id/weatherImageTwo"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
 
                     />
@@ -202,7 +199,7 @@
                 <TextView
 
                     android:id="@+id/textviewWeatherTwo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="82°"
                     android:textStyle="bold"
@@ -217,14 +214,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutThree" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime3"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -237,10 +234,10 @@
                 <ImageView
 
                     android:id="@+id/weatherImageThree"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
 
                     />
@@ -248,7 +245,7 @@
                 <TextView
 
                     android:id="@+id/textviewWeatherThree"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="86°"
                     android:textStyle="bold"
@@ -263,14 +260,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutFour" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime4"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -283,10 +280,10 @@
                 <ImageView
 
                     android:id="@+id/weatherImageFour"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
 
                     />
@@ -294,7 +291,7 @@
                 <TextView
 
                     android:id="@+id/textviewWeatherFour"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="80°"
                     android:textStyle="bold"
@@ -311,14 +308,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutSix" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime5"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -331,8 +328,8 @@
                 <ImageView
 
                     android:id="@+id/weatherImageFive"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
                     android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
@@ -342,7 +339,7 @@
                 <TextView
 
                     android:id="@+id/textviewWeatherFive"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="78°"
                     android:textStyle="bold"
@@ -357,14 +354,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutSeven" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime6"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -377,10 +374,10 @@
                 <ImageView
 
                     android:id="@+id/weatherImageSix"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
 
                     android:layout_centerVertical="true"
                     android:layout_centerHorizontal="true" />
@@ -388,7 +385,7 @@
                 <TextView
 
                     android:id="@+id/textviewWeatherSix"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="80°"
                     android:textStyle="bold"
@@ -402,14 +399,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutEight" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime7"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -421,15 +418,15 @@
                 <ImageView
 
                     android:id="@+id/weatherImageSeven"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true" />
                 <TextView
 
                     android:id="@+id/textviewWeatherSeven"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="80°"
                     android:textStyle="bold"
@@ -442,14 +439,14 @@
             <RelativeLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:id="@+id/weatherLayoutNine" >
                 <TextView
 
                     android:id="@+id/textviewWeatherTime8"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="12am"
                     android:textStyle="bold"
@@ -461,17 +458,17 @@
                 <ImageView
 
                     android:id="@+id/weatherImageEight"
-                    android:layout_width="60sp"
-                    android:layout_height="60sp"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
                     android:src="@drawable/ic_weather_icon"
-                    android:layout_marginRight="10sp"
+                    android:layout_marginRight="10dp"
                     android:layout_centerInParent="true"
 
                     />
                 <TextView
 
                     android:id="@+id/textviewWeatherEight"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="80°"
                     android:textStyle="bold"
@@ -488,4 +485,4 @@
 
     </HorizontalScrollView>
     </RelativeLayout>
-</ScrollView>
+    </ScrollView>

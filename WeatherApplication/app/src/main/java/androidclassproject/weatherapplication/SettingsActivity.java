@@ -33,6 +33,11 @@ public class SettingsActivity extends AppCompatActivity {
             // Set the theme.
             setTheme(R.style.theme_dark);
 
+        } else if (theme_settings == 2) {
+
+            // Set the theme.
+            setTheme(R.style.theme_sun);
+
         }
 
         // Display the fragment as the main content.
