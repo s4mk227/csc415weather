@@ -2,13 +2,17 @@ package androidclassproject.weatherapplication;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -23,12 +27,15 @@ import com.google.gson.reflect.TypeToken;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
+
 import android.widget.Toast;
 
 import androidclassproject.weatherapplication.Common.Common;
@@ -68,7 +75,9 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     int time_setting = 0;
 
     private SharedPreferences prefs;
-
+    RecyclerView recyclerView;
+    HourAdapter mAdapter;
+    RecyclerView.LayoutManager mLayoutManager;
     int MY_MYPERMISSION = 0;
     TextView hourlyTexts[];
     TextView hourlyDegreeTexts[];
@@ -82,7 +91,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     double device_time_calculate = (double) device_time;
     double sunset_time;
     double sunrise_time;
-
+    Configuration config;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -97,23 +106,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         // Get the value of the theme.
         theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
 
-        if (theme_settings == 0) {
-
-            // Set the theme.
-            setTheme(R.style.theme_light);
-
-            // Set the theme settings check.
-            theme_settings_check = 0;
-
-        } else if (theme_settings == 1) {
-
-            // Set the theme.
-            setTheme(R.style.theme_dark);
-
-            // Set the theme settings check.
-            theme_settings_check = 1;
-
-        }
+        set_theme();
 
         // Display the application icon in the title bar.
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -121,30 +114,58 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         setContentView(R.layout.activity_display_weather);
-        hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
-                (TextView) findViewById(R.id.textviewWeatherTime2),(TextView)findViewById(R.id.textviewWeatherTime3)
-                ,(TextView)findViewById(R.id.textviewWeatherTime4),(TextView)findViewById(R.id.textviewWeatherTime5),
-                (TextView)findViewById(R.id.textviewWeatherTime6)
-                ,(TextView)findViewById(R.id.textviewWeatherTime7),(TextView)findViewById(R.id.textviewWeatherTime8)};
-        hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
-                (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
-                , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
-                (TextView) findViewById(R.id.textviewWeatherSix)
-                , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
-        hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
-                , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
-                (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
-                (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
-        // Declare variables for the widgets on the DisplayWeather page.
-        txtCity = (TextView) findViewById(R.id.txtCity);
-        txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
-        txtDescription = (TextView) findViewById(R.id.txtDescription);
-        txtHumidity = (TextView) findViewById(R.id.txtHumidity);
-        txtTime = (TextView) findViewById(R.id.txtTime);
-        txtCelsius = (TextView) findViewById(R.id.txtCelsius);
-        imageView = (ImageView) findViewById(R.id.imageView);
+        config = this.getResources().getConfiguration();
+
+        if (config.smallestScreenWidthDp >= 600)
+        {
+            DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            txtCity = (TextView) findViewById(R.id.txtCity);
+            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+            txtDescription = (TextView) findViewById(R.id.txtDescription);
+            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+            txtTime = (TextView) findViewById(R.id.txtTime);
+            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+            imageView = (ImageView) findViewById(R.id.imageView);
+            // Get the user's coordinates.
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            provider = locationManager.getBestProvider(new Criteria(), false);
+            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+            new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+        }
+        else
+        {
+            // fall-back code goes here
+
+            hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
+                    (TextView) findViewById(R.id.textviewWeatherTime2), (TextView) findViewById(R.id.textviewWeatherTime3)
+                    , (TextView) findViewById(R.id.textviewWeatherTime4), (TextView) findViewById(R.id.textviewWeatherTime5),
+                    (TextView) findViewById(R.id.textviewWeatherTime6)
+                    , (TextView) findViewById(R.id.textviewWeatherTime7), (TextView) findViewById(R.id.textviewWeatherTime8)};
+            hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
+                    (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
+                    , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
+                    (TextView) findViewById(R.id.textviewWeatherSix)
+                    , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
+            hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
+                    , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
+                    (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
+                    (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
+            // Declare variables for the widgets on the DisplayWeather page.
+            txtCity = (TextView) findViewById(R.id.txtCity);
+            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+            txtDescription = (TextView) findViewById(R.id.txtDescription);
+            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+            txtTime = (TextView) findViewById(R.id.txtTime);
+            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+            imageView = (ImageView) findViewById(R.id.imageView);
 
 
+            // Get the user's coordinates.
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            provider = locationManager.getBestProvider(new Criteria(), false);
+
+            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+        }
         // Get the user's coordinates.
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
@@ -214,7 +235,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                // Toast.makeText(getBaseContext(), "Setting Selected.", Toast.LENGTH_LONG).show();
                 return true;
             case R.id.menu_about:
                 startActivity(new Intent(getApplicationContext(), AboutActivity.class));
@@ -222,6 +242,46 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void set_theme() {
+
+        if (theme_settings == 0) {
+
+            // Set the theme.
+            setTheme(R.style.theme_light);
+
+            // Set the theme settings check.
+            theme_settings_check = 0;
+
+        } else if (theme_settings == 1) {
+
+            // Set the theme.
+            setTheme(R.style.theme_dark);
+
+            // Set the theme settings check.
+            theme_settings_check = 1;
+
+        } else if (theme_settings == 2) {
+
+            // Check the time.
+
+            // Check if the time is before 12:00PM and after the sunrise.
+            // Display the white theme.
+
+            // Check if the time is after 12:00PM and before the sunset time.
+            // Display the orange theme.
+
+            // Check if the time is after the sunset time and before the sunrise time.
+            // Display the dark theme.
+
+            // Set the theme.
+            setTheme(R.style.theme_sun);
+
+            // Set the theme settings check.
+            theme_settings_check = 2;
+
         }
     }
 
@@ -425,8 +485,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             Helper http = new Helper();
             stream = http.getHTTPData(urlString);
 
-            Log.e("Tag", urlString);
-
             return stream;
 
         }
@@ -457,41 +515,50 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             //recyclerView.setLayoutManager(mLayoutManager);
             //mAdapter = new HourAdapter(t,hourlyWeatherMap);
             //recyclerView.setAdapter(mAdapter);
-            for (int i = 0; i < hourlyWeatherMap.getCnt(); i++) {
-                String text = hourlyWeatherMap.getList().get(i).getDt_txt();
-                text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
-                String tfhTime = text;
-                text = HourParseHelper(text);
-                hourlyTexts[i].setText(text);
-                double check = 1.8;
-                double temp_celsius = (int) hourlyWeatherMap.getList().get(i).getMain().getTemp();
-                double temp_fahrenheit = temp_celsius * check + 32;
-                temp_fahrenheit = Math.round(temp_fahrenheit);
-                display_fahrenheit = Double.toString(temp_fahrenheit);
-                display_fahrenheit = String.format("%s°F", display_fahrenheit);
-                display_celsius = Double.toString(temp_celsius);
-                display_celsius = String.format("%s °C", display_celsius);
-                /*Picasso.with(DisplayWeather.this)
-                        .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
-                        .into(hourlyImages[i]);*/
-                try {
-                    setIcon(hourlyWeatherMap.getList().get(i).getWeather().get(0), hourlyImages[i], tfhTime);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    Log.e("TAG", "GetHourlyWeather: Error parsing string for setIcon");
-                }
-
-                if (temp_setting == 0) {
-
-                    hourlyDegreeTexts[i].setText(display_fahrenheit);
-
-                } else {
-
-                    hourlyDegreeTexts[i].setText(display_celsius);
-
-                }
+            if (config.smallestScreenWidthDp >= 600)
+            {
+                DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                mLayoutManager = new LinearLayoutManager(DisplayWeather.this);
+                recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+                mAdapter = new HourAdapter(DisplayWeather.this, hourlyWeatherMap);
+                mAdapter.setPrefs(prefs);
+                recyclerView.setLayoutManager(mLayoutManager);
+                recyclerView.setAdapter(mAdapter);
+                //DisplayWeather.this.getFragmentManager().beginTransaction().add(R.id.fragment_container,hour).commit();
             }
-            
+            else
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    String text = hourlyWeatherMap.getList().get(i).getDt_txt();
+                    text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
+                    text = HourParseHelper(text);
+                    hourlyTexts[i].setText(text);
+                    double check = 1.8;
+                    double temp_celsius = (int) hourlyWeatherMap.getList().get(i).getMain().getTemp();
+                    double temp_fahrenheit = temp_celsius * check + 32;
+                    temp_fahrenheit = Math.round(temp_fahrenheit);
+                    display_fahrenheit = Double.toString(temp_fahrenheit);
+                    display_fahrenheit = String.format("%s°F", display_fahrenheit);
+                    display_celsius = Double.toString(temp_celsius);
+                    display_celsius = String.format("%s °C", display_celsius);
+                    Picasso.with(DisplayWeather.this)
+                            .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
+                            .into(hourlyImages[i]);
+                    if (temp_setting == 0) {
+
+                        hourlyDegreeTexts[i].setText(display_fahrenheit);
+
+                    } else {
+
+                        hourlyDegreeTexts[i].setText(display_celsius);
+
+                    }
+                }
+
+            }
+
+
         }
 
         @Override
@@ -502,8 +569,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             Helper http = new Helper();
             stream = http.getHTTPData(urlString);
-
-            Log.e("Tag", urlString);
 
             return stream;
 
