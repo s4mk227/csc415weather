@@ -38,6 +38,14 @@ public class AboutActivity extends AppCompatActivity {
             // Set the theme settings check.
             theme_settings_check = 1;
 
+        } else if (theme_settings == 2) {
+
+            // Set the theme.
+            setTheme(R.style.theme_sun);
+
+            // Set the theme settings check.
+            theme_settings_check = 2;
+
         }
 
         setContentView(R.layout.activity_about);
