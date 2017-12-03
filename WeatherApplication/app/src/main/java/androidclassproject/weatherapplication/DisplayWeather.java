@@ -92,6 +92,11 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     double sunset_time;
     double sunrise_time;
     Configuration config;
+
+    //Result code to retrieve saved locations
+    private static final int GET_SAVED_LOCATION = 1;
+    private static boolean USE_SAVED_LOCATION = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,7 +198,10 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         Location location = null;
 
         // If either is enabled, try to get last known location
-        if (networkLocationEnabled || gpsLocationEnabled) {
+        if (USE_SAVED_LOCATION) {
+            //do nothing
+        }
+        else if (networkLocationEnabled || gpsLocationEnabled) {
             location = locationManager.getLastKnownLocation(provider);
             if (location != null) {
                 lat = location.getLatitude();
@@ -241,12 +249,10 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 return true;
             case R.id.menu_locations:
                 Intent locationActivity = new Intent(getApplicationContext(), LocationActivity.class);
-                //Include longitude and latitude so the current location can be saved if desired
-                Bundle bundle = new Bundle();
                 locationActivity.putExtra("current_longitude", lng);
                 locationActivity.putExtra("current_latitude", lat);
                 locationActivity.putExtra("current_city", city);
-                startActivity(locationActivity);
+                startActivityForResult(locationActivity, GET_SAVED_LOCATION);
                 return true;
 
             default:
@@ -711,4 +717,15 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             return "fog";
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case GET_SAVED_LOCATION:
+                USE_SAVED_LOCATION = true;
+                lng = data.getDoubleExtra("saved_longitude", lng);
+                lat = data.getDoubleExtra("saved_latitude", lat);
+                city = data.getStringExtra("saved_city");
+        }
+    }
 }
