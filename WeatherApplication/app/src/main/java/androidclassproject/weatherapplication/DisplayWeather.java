@@ -95,7 +95,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     //Result code to retrieve saved locations
     private static final int GET_SAVED_LOCATION = 1;
-    private static boolean USE_SAVED_LOCATION = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -198,10 +197,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         Location location = null;
 
         // If either is enabled, try to get last known location
-        if (USE_SAVED_LOCATION) {
-            //do nothing
-        }
-        else if (networkLocationEnabled || gpsLocationEnabled) {
+        if (networkLocationEnabled || gpsLocationEnabled) {
             location = locationManager.getLastKnownLocation(provider);
             if (location != null) {
                 lat = location.getLatitude();
@@ -444,7 +440,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
             temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
-            txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
+            //txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
@@ -722,7 +718,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case GET_SAVED_LOCATION:
-                USE_SAVED_LOCATION = true;
                 lng = data.getDoubleExtra("saved_longitude", lng);
                 lat = data.getDoubleExtra("saved_latitude", lat);
                 city = data.getStringExtra("saved_city");
