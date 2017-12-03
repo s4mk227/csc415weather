@@ -95,6 +95,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     //Result code to retrieve saved locations
     private static final int GET_SAVED_LOCATION = 1;
+    private static boolean USE_SAVED_LOCATION = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +147,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
             t.show();
         }
-        else{
+        else {
             Toast t = Toast.makeText(this, "Enable location services and try again.", Toast.LENGTH_SHORT);
             t.show();
         }
@@ -369,7 +370,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
             temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
-            //txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
+            txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
             txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
@@ -547,6 +548,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         }
 
     }
+
     public void setIcon(Weather weather, ImageView imgView, String time) throws ParseException{
 
         // Get the weather description
@@ -647,6 +649,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case GET_SAVED_LOCATION:
+                USE_SAVED_LOCATION = true;
                 lng = data.getDoubleExtra("saved_longitude", lng);
                 lat = data.getDoubleExtra("saved_latitude", lat);
                 city = data.getStringExtra("saved_city");
@@ -699,10 +702,12 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     private void retrieveLocation() {
         Location location = new Location(provider);
 
-        lat = location.getLatitude();
-        lng = location.getLongitude();
-        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+        if (!USE_SAVED_LOCATION) {
+            lat = location.getLatitude();
+            lng = location.getLongitude();
+            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+            new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+        }
     }
 
     private boolean locationPermissionNotGranted() {
