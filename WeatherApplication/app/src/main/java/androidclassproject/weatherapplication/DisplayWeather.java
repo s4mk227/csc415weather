@@ -100,16 +100,12 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // set the default values for the preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        // get default SharedPreferences object
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         // Get the value of the theme.
         theme_settings = Integer.parseInt(prefs.getString("pref_theme", "0"));
-
         set_theme();
 
         // Display the application icon in the title bar.
@@ -120,98 +116,36 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         setContentView(R.layout.activity_display_weather);
         config = this.getResources().getConfiguration();
 
-        if (config.smallestScreenWidthDp >= 600)
-        {
-            DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            txtCity = (TextView) findViewById(R.id.txtCity);
-            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
-            txtDescription = (TextView) findViewById(R.id.txtDescription);
-            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
-            txtTime = (TextView) findViewById(R.id.txtTime);
-            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
-            imageView = (ImageView) findViewById(R.id.imageView);
-            // Get the user's coordinates.
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            provider = locationManager.getBestProvider(new Criteria(), false);
-            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-            new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
-        }
-        else
-        {
-            // fall-back code goes here
+        //Wire up widgets to their corresponding xml definitions
+        setUpWidgets();
 
-            hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
-                    (TextView) findViewById(R.id.textviewWeatherTime2), (TextView) findViewById(R.id.textviewWeatherTime3)
-                    , (TextView) findViewById(R.id.textviewWeatherTime4), (TextView) findViewById(R.id.textviewWeatherTime5),
-                    (TextView) findViewById(R.id.textviewWeatherTime6)
-                    , (TextView) findViewById(R.id.textviewWeatherTime7), (TextView) findViewById(R.id.textviewWeatherTime8)};
-            hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
-                    (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
-                    , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
-                    (TextView) findViewById(R.id.textviewWeatherSix)
-                    , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
-            hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
-                    , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
-                    (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
-                    (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
-            // Declare variables for the widgets on the DisplayWeather page.
-            txtCity = (TextView) findViewById(R.id.txtCity);
-            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
-            txtDescription = (TextView) findViewById(R.id.txtDescription);
-            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
-            txtTime = (TextView) findViewById(R.id.txtTime);
-            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
-            imageView = (ImageView) findViewById(R.id.imageView);
-
-
-            // Get the user's coordinates.
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            provider = locationManager.getBestProvider(new Criteria(), false);
-
-            new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-        }
         // Get the user's coordinates.
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         provider = locationManager.getBestProvider(new Criteria(), false);
+        retrieveLocation();
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
+        //Request Permissions for location
+        if (locationPermissionNotGranted()) {
             ActivityCompat.requestPermissions(DisplayWeather.this, new String[]{
-
-
                     Manifest.permission.INTERNET,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_NETWORK_STATE,
                     Manifest.permission.SYSTEM_ALERT_WINDOW,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
-
-
             }, MY_MYPERMISSION);
-
         }
 
         // Check if location is enabled or not
         networkLocationEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
         gpsLocationEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        Location location = null;
 
         // If either is enabled, try to get last known location
         if (networkLocationEnabled || gpsLocationEnabled) {
-            location = locationManager.getLastKnownLocation(provider);
-            if (location != null) {
-                lat = location.getLatitude();
-                lng = location.getLongitude();
-                new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-                new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
-            }
-            // There was no last known location for this device, so wait for onLocationChanged to be called
-            else {
-                Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
-                t.show();
-            }
+            retrieveLocation();
+            Toast t = Toast.makeText(this, "Retrieving location", Toast.LENGTH_SHORT);
+            t.show();
         }
-        // Do nothing if location services are not enabled.
         else{
             Toast t = Toast.makeText(this, "Enable location services and try again.", Toast.LENGTH_SHORT);
             t.show();
@@ -220,12 +154,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
     @Override
     public void onLocationChanged(Location location) {
-
-        lat = location.getLatitude();
-        lng = location.getLongitude();
-
-        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
-        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+        retrieveLocation();
     }
 
     @Override
@@ -722,5 +651,62 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 lat = data.getDoubleExtra("saved_latitude", lat);
                 city = data.getStringExtra("saved_city");
         }
+    }
+
+    private void setUpWidgets() {
+        if (config.smallestScreenWidthDp >= 600)
+        {
+            DisplayWeather.this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            txtCity = (TextView) findViewById(R.id.txtCity);
+            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+            txtDescription = (TextView) findViewById(R.id.txtDescription);
+            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+            txtTime = (TextView) findViewById(R.id.txtTime);
+            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+            imageView = (ImageView) findViewById(R.id.imageView);
+        }
+        else
+        {
+            // fall-back code goes here
+            hourlyTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherTime1),
+                    (TextView) findViewById(R.id.textviewWeatherTime2), (TextView) findViewById(R.id.textviewWeatherTime3)
+                    , (TextView) findViewById(R.id.textviewWeatherTime4), (TextView) findViewById(R.id.textviewWeatherTime5),
+                    (TextView) findViewById(R.id.textviewWeatherTime6)
+                    , (TextView) findViewById(R.id.textviewWeatherTime7), (TextView) findViewById(R.id.textviewWeatherTime8)};
+
+            hourlyDegreeTexts = new TextView[]{(TextView) findViewById(R.id.textviewWeatherOne),
+                    (TextView) findViewById(R.id.textviewWeatherTwo), (TextView) findViewById(R.id.textviewWeatherThree)
+                    , (TextView) findViewById(R.id.textviewWeatherFour), (TextView) findViewById(R.id.textviewWeatherFive),
+                    (TextView) findViewById(R.id.textviewWeatherSix)
+                    , (TextView) findViewById(R.id.textviewWeatherSeven), (TextView) findViewById(R.id.textviewWeatherEight)};
+
+            hourlyImages = new ImageView[]{(ImageView) findViewById(R.id.weatherImageOne), (ImageView) findViewById(R.id.weatherImageTwo)
+                    , (ImageView) findViewById(R.id.weatherImageThree), (ImageView) findViewById(R.id.weatherImageFour),
+                    (ImageView) findViewById(R.id.weatherImageFive), (ImageView) findViewById(R.id.weatherImageSix),
+                    (ImageView) findViewById(R.id.weatherImageSeven), (ImageView) findViewById(R.id.weatherImageEight)};
+
+            // Declare variables for the widgets on the DisplayWeather page.
+            txtCity = (TextView) findViewById(R.id.txtCity);
+            txtLastUpdate = (TextView) findViewById(R.id.txtLastUpdate);
+            txtDescription = (TextView) findViewById(R.id.txtDescription);
+            txtHumidity = (TextView) findViewById(R.id.txtHumidity);
+            txtTime = (TextView) findViewById(R.id.txtTime);
+            txtCelsius = (TextView) findViewById(R.id.txtCelsius);
+            imageView = (ImageView) findViewById(R.id.imageView);
+        }
+    }
+
+    private void retrieveLocation() {
+        Location location = new Location(provider);
+
+        lat = location.getLatitude();
+        lng = location.getLongitude();
+        new GetWeather().execute(Common.apiRequest(String.valueOf(lat), String.valueOf(lng)));
+        new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(lat), String.valueOf(lng)));
+    }
+
+    private boolean locationPermissionNotGranted() {
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
     }
 }
