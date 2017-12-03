@@ -38,7 +38,7 @@
 
         <activity
             android:name="androidclassproject.weatherapplication.LocationActivity"
-            android:label="Saved Locations" >
+            android:label="Locations" >
         </activity>
 
     </application>

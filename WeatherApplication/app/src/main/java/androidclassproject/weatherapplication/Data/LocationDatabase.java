@@ -11,9 +11,13 @@ public abstract class LocationDatabase extends RoomDatabase {
 
     public abstract LocationDao locationDao();
 
+    //TODO: Run database query in a separate thread
     public static LocationDatabase getLocationDatabase(Context context) {
         if (instance == null)
-            instance = Room.databaseBuilder(context, LocationDatabase.class, "location-database").build();
+            instance = Room
+                    .databaseBuilder(context, LocationDatabase.class, "location-database")
+                    .allowMainThreadQueries()
+                    .build();
         return instance;
     }
 }

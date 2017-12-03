@@ -242,8 +242,10 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             case R.id.menu_locations:
                 Intent locationActivity = new Intent(getApplicationContext(), LocationActivity.class);
                 //Include longitude and latitude so the current location can be saved if desired
+                Bundle bundle = new Bundle();
                 locationActivity.putExtra("current_longitude", lng);
                 locationActivity.putExtra("current_latitude", lat);
+                locationActivity.putExtra("current_city", city);
                 startActivity(locationActivity);
                 return true;
 
