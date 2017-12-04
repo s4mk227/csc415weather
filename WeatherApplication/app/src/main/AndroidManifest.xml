@@ -32,9 +32,19 @@
         </activity>
 
         <activity
+            android:name="androidclassproject.weatherapplication.SelectUpdateTime"
+            android:label="Set Update Time" >
+        </activity>
+
+        <activity
             android:name="androidclassproject.weatherapplication.AboutActivity"
             android:label="About" >
         </activity>
+
+        <service
+            android:name=".WeatherUpdateService"
+            android:exported="false">
+        </service>
 
     </application>
 

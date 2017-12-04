@@ -27,7 +27,6 @@ import com.google.gson.reflect.TypeToken;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -95,7 +94,6 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         // set the default values for the preferences
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -212,6 +210,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             Toast t = Toast.makeText(this, "Enable location services and try again.", Toast.LENGTH_SHORT);
             t.show();
         }
+
+
     }
 
     @Override
@@ -235,6 +235,9 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
         switch (item.getItemId()) {
             case R.id.menu_settings:
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                return true;
+            case R.id.menu_select_update_time:
+                startActivity(new Intent(getApplicationContext(), SelectUpdateTime.class));
                 return true;
             case R.id.menu_about:
                 startActivity(new Intent(getApplicationContext(), AboutActivity.class));
@@ -441,6 +444,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
             //Load icons locally
             String now = String.format(Common.getDateNow());
             now = now.substring(11, now.length());
+
             try {
                 setIcon(openWeatherMap.getWeather().get(0), imageView, now);
             } catch (ParseException e) {
@@ -473,7 +477,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 txtHumidity.setText(getResources().getString(R.string.humidityCheck));
             else
                 txtHumidity.setText(humidity);
-            
+
+
         }
 
         @Override
