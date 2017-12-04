@@ -432,10 +432,10 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
             time_display_sunrise = String.format("Sunrise: %s", Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise()));
             temp_time_display = Common.unixTimeStampToDateTime(openWeatherMap.getSys().getSunrise());
-            txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
+            /*txtCity.setText(String.format("%s, %s", openWeatherMap.getName(), openWeatherMap.getSys().getCountry()));
             txtLastUpdate.setText(String.format("Last Update: %s", Common.getDateNow()));
             txtDescription.setText(String.format("%s", openWeatherMap.getWeather().get(0).getDescription().substring(0, 1).toUpperCase() + openWeatherMap.getWeather().get(0).getDescription().substring(1)));
-            txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));
+            txtHumidity.setText(String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity()));*/
             txtTime.setText(time_display_sunrise);
             /*Picasso.with(DisplayWeather.this)
                     .load(Common.getImage(openWeatherMap.getWeather().get(0).getIcon()))
