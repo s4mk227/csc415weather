@@ -458,7 +458,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                     + openWeatherMap.getWeather().get(0).getDescription().substring(1));
             humidity = String.format("Humidity: %d%%", openWeatherMap.getMain().getHumidity());
 
-            if(city == null)
+            if(city.equals(", null"))
                 txtCity.setText(getResources().getString(R.string.cityCheck));
             else
                 txtCity.setText(city);
@@ -537,6 +537,7 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                 {
                     String text = hourlyWeatherMap.getList().get(i).getDt_txt();
                     text = text.substring(hourlyWeatherMap.getList().get(i).getDt_txt().length() - 8, hourlyWeatherMap.getList().get(i).getDt_txt().length() - 3);
+                    String tfhTime = text;
                     text = HourParseHelper(text);
                     hourlyTexts[i].setText(text);
                     double check = 1.8;
@@ -547,9 +548,15 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
                     display_fahrenheit = String.format("%s°F", display_fahrenheit);
                     display_celsius = Double.toString(temp_celsius);
                     display_celsius = String.format("%s °C", display_celsius);
-                    Picasso.with(DisplayWeather.this)
-                            .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
-                            .into(hourlyImages[i]);
+//                    Picasso.with(DisplayWeather.this)
+//                            .load(Common.getImage(hourlyWeatherMap.getList().get(i).getWeather().get(0).getIcon()))
+//                            .into(hourlyImages[i]);
+                    try {
+                        setIcon(hourlyWeatherMap.getList().get(i).getWeather().get(0), hourlyImages[i], tfhTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                        Log.e("TAG", "GetWeather: Error parsing string for setIcon");
+                    }
                     if (temp_setting == 0) {
 
                         hourlyDegreeTexts[i].setText(display_fahrenheit);
