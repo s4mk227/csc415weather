@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="db-framework-1.0.0">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.android/build-cache/60185f8c82d3337f045948b4e4e4ec9bbe22a499/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/60185f8c82d3337f045948b4e4e4ec9bbe22a499/output/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/android.arch.persistence/db-framework/1.0.0/dde04bc616cdedc6a1a32814151bc57ac6eccc3f/db-framework-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

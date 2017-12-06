@@ -1,7 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:compat="http://schemas.android.com/apk/res_auto"
-    android:dropDownVerticalOffset="10dp">
-    <item android:id="@+id/menu_save_location"
-        android:title="@string/save_location"
-        compat:showAsAction="always"/>
-</menu>
