@@ -123,7 +123,7 @@ public class WeatherUpdateService extends Service implements LocationListener {
             Log.v("check", e.toString());
 
         }
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     @Override
@@ -217,7 +217,7 @@ public class WeatherUpdateService extends Service implements LocationListener {
         // long check = System.currentTimeMillis();
 
 
-        long interval = 1000 * 30;
+        long interval = 1000 * 60 * 3;
         Log.v("Check", Long.toString(interval));
         timer.scheduleAtFixedRate(task, start_date, interval);
     }

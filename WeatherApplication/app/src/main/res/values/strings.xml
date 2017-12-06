@@ -27,9 +27,9 @@
     </string-array>
 
     <string-array name="theme_options">
-        <item >Morning</item>
-        <item >Night</item>
-        <item>Afternoon</item>
+        <item >Light</item>
+        <item >Dark</item>
+        <item>Sun Position</item>
     </string-array>
     <string-array name="theme_values">
         <item >0</item>
