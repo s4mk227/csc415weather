@@ -738,8 +738,8 @@ public class DisplayWeather extends AppCompatActivity implements LocationListene
 
         switch (resultCode) {
             case 1:
-                    savedLat = data.getDoubleExtra("saved_latitude", 36);
-                    savedLng = data.getDoubleExtra("saved_longitude", 125);
+                    savedLat = data.getDoubleExtra("saved_latitude", lat);
+                    savedLng = data.getDoubleExtra("saved_longitude", lng);
                     new GetWeather().execute(Common.apiRequest(String.valueOf(savedLat), String.valueOf(savedLng)));
                     new GetHourlyWeather().execute(Common.hourlyRequest(String.valueOf(savedLat), String.valueOf(savedLng)));
                     locationManager.removeUpdates(this);
