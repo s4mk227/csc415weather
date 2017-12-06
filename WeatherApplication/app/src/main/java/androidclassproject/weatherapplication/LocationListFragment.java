@@ -13,9 +13,11 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import androidclassproject.weatherapplication.Data.LocationDao;
 import androidclassproject.weatherapplication.Data.LocationDatabase;
@@ -23,7 +25,7 @@ import androidclassproject.weatherapplication.Data.SavedLocation;
 
 public class LocationListFragment extends ListFragment {
 
-    private LinkedList<SavedLocation> savedLocations = new LinkedList<>();
+    private LinkedList<SavedLocation> savedLocations;
     private ArrayAdapter adapter;
 
     private double longitude;
@@ -38,6 +40,7 @@ public class LocationListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        savedLocations = new LinkedList<SavedLocation>();
         locationDatabase = LocationDatabase.getLocationDatabase(getContext());
         locationDao = locationDatabase.locationDao();
 
@@ -46,7 +49,7 @@ public class LocationListFragment extends ListFragment {
         latitude = extras.getDouble("current_latitude");
         city = extras.getString("current_city");
 
-        savedLocations.addAll(locationDao.getall());
+        savedLocations.addAll(locationDao.getAll());
         savedLocations.addFirst(getCurrentLocation());
 
         adapter = new ArrayAdapter<SavedLocation>(getActivity(), android.R.layout.simple_list_item_1, savedLocations);

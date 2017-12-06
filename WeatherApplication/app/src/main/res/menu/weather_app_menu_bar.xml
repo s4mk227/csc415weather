@@ -10,5 +10,8 @@
         compat:showAsAction="always" />
     <item android:id="@+id/menu_about"
         android:title="@string/menu_about"
-        compat:showAsAction="always" />
+        compat:showAsAction="always"/>
+    <item android:id="@+id/menu_location"
+        android:title="Locations"
+        compat:showAsAction="always"/>
 </menu>
