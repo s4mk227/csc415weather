@@ -27,7 +27,4 @@
         android:entryValues="@array/theme_values"
         android:defaultValue="0" />
 
-    <Preference
-        android:key="pref_use_saved_location"
-        android:defaultValue="false" />
 </PreferenceScreen>

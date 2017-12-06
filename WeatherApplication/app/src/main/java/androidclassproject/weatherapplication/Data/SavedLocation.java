@@ -3,6 +3,8 @@ package androidclassproject.weatherapplication.Data;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.util.Comparator;
+
 @Entity
 public class SavedLocation {
 
@@ -51,6 +53,6 @@ public class SavedLocation {
 
     @Override
     public String toString() {
-        return location + " " + latitude + " " + longitude;
+        return location;
     }
 }

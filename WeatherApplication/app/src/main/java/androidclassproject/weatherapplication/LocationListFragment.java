@@ -1,6 +1,7 @@
 package androidclassproject.weatherapplication;
 
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 import androidclassproject.weatherapplication.Data.LocationDao;
@@ -72,13 +76,8 @@ public class LocationListFragment extends ListFragment {
         super.onListItemClick(l, v, position, id);
 
         Intent returnToDisplayWeather = new Intent(getActivity().getApplicationContext(), DisplayWeather.class);
-        returnToDisplayWeather.putExtra("saved_longitude", longitude);
-        returnToDisplayWeather.putExtra("saved latitude", latitude);
-        if (position != 0)
-            returnToDisplayWeather.putExtra("saved_city", city);
-        else
-            returnToDisplayWeather.putExtra("saved_city", "use_current_city");
-
+        returnToDisplayWeather.putExtra("saved_longitude", savedLocations.get(position).getLongitude());
+        returnToDisplayWeather.putExtra("saved latitude", savedLocations.get(position).getLatitude());
         getActivity().setResult(1, returnToDisplayWeather);
         getActivity().finish();
     }
