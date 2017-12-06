@@ -48,7 +48,4 @@
     <string name="theme_summary">Select a theme.</string>
     <string name="btRefresh">Refresh</string>
 
-    <string name="location">Location</string>
-    <string name="save_location">Save Current Location</string>
-
 </resources>
