@@ -41,6 +41,11 @@
             android:label="About" >
         </activity>
 
+        <activity
+            android:name="androidclassproject.weatherapplication.LocationListActivity"
+            android:label="Locations" >
+        </activity>
+
         <service
             android:name=".WeatherUpdateService"
             android:exported="false">
